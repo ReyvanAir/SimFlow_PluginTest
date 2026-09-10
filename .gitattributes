@@ -1,0 +1,36 @@
+# Unreal text/config files
+*.ini text eol=crlf
+*.uproject text eol=crlf
+*.uplugin text eol=crlf
+
+# Source code
+*.Build.cs text
+*.Target.cs text
+*.cpp text
+*.h text
+*.cs text
+
+# Additional text files
+*.json text
+*.txt text
+*.md text
+
+# Unreal binary assets
+*.uasset binary
+*.umap binary
+
+# Common binary assets
+*.fbx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.tga binary
+*.wav binary
+*.mp3 binary
+*.mp4 binary
+*.mov binary
+*.psd binary
+*.blend binary
+*.zip binary
+*.rar binary
+*.7z binary

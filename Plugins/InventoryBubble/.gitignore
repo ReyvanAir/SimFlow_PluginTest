@@ -1,0 +1,11 @@
+# Unreal build output
+Binaries/
+Intermediate/
+*.pdb
+
+# graphify knowledge graph (generated, ~900 KB)
+graphify-out/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

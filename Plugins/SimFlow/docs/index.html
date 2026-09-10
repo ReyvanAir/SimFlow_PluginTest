@@ -1,0 +1,1632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SimFlow Documentation</title>
+<meta name="description" content="SimFlow — a modular, data-driven task and flow framework for Unreal Engine 5.6. User guide and developer reference.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root {
+  --ground:#F4F6F8; --surface:#FFFFFF; --surface-2:#E9EEF2;
+  --ink:#16202B; --ink-2:#46586A; --ink-3:#76899B;
+  --rule:#D6DEE6; --rule-strong:#B9C6D1;
+  --accent:#A8630B; --accent-soft:#FAEFDC;
+  --verify:#106664; --verify-soft:#DFEFEE;
+  --alert:#97332A; --alert-soft:#FAE8E5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:#0F171E; --surface:#18222C; --surface-2:#202C37;
+    --ink:#E5EBF1; --ink-2:#A5B5C3; --ink-3:#75899B;
+    --rule:#293846; --rule-strong:#3B4E5F;
+    --accent:#E9A445; --accent-soft:#2B2113;
+    --verify:#56BDB8; --verify-soft:#102B2A;
+    --alert:#E68B7C; --alert-soft:#2E1915;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:#0F171E; --surface:#18222C; --surface-2:#202C37;
+  --ink:#E5EBF1; --ink-2:#A5B5C3; --ink-3:#75899B;
+  --rule:#293846; --rule-strong:#3B4E5F;
+  --accent:#E9A445; --accent-soft:#2B2113;
+  --verify:#56BDB8; --verify-soft:#102B2A;
+  --alert:#E68B7C; --alert-soft:#2E1915;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  font-size:15.5px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+
+/* ------------------------------------------------------------- masthead */
+
+.masthead {
+  border-bottom:1px solid var(--rule);
+  background:var(--surface);
+  padding:26px 32px 0;
+}
+.masthead-inner { max-width:1180px; margin:0 auto; }
+
+.brand { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:6px; }
+.brand h1 {
+  font-family:Archivo, system-ui, sans-serif; font-weight:700;
+  font-size:1.72rem; letter-spacing:-.02em; margin:0;
+}
+.version {
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px; font-weight:500;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--accent);
+}
+.tagline { color:var(--ink-2); margin:0 0 20px; font-size:.95rem; max-width:64ch; }
+
+.topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.switch { display:flex; gap:2px; }
+.switch button {
+  font-family:"IBM Plex Sans", sans-serif; font-size:.9rem; font-weight:500;
+  background:none; border:none; border-bottom:2px solid transparent;
+  color:var(--ink-3); padding:10px 16px; cursor:pointer;
+}
+.switch button:hover { color:var(--ink); }
+.switch button[aria-selected="true"] { color:var(--ink); border-bottom-color:var(--accent); font-weight:600; }
+.switch button:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+
+.theme-toggle {
+  font-family:"IBM Plex Mono", monospace; font-size:11px; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase;
+  background:var(--surface-2); border:1px solid var(--rule); border-radius:6px;
+  color:var(--ink-2); padding:6px 12px; cursor:pointer; margin-bottom:8px;
+}
+.theme-toggle:hover { color:var(--ink); border-color:var(--rule-strong); }
+
+/* ---------------------------------------------------------------- shell */
+
+.shell {
+  max-width:1180px; margin:0 auto; padding:0 32px;
+  display:grid; grid-template-columns:224px 1fr; gap:48px; align-items:start;
+}
+
+nav.toc {
+  position:sticky; top:24px; padding:34px 0 40px;
+  max-height:calc(100vh - 48px); overflow-y:auto;
+}
+nav.toc ol { list-style:none; margin:0; padding:0; counter-reset:sec; }
+nav.toc li { margin:0; }
+nav.toc a {
+  display:block; padding:5px 10px 5px 12px; border-left:2px solid var(--rule);
+  color:var(--ink-3); text-decoration:none; font-size:.845rem; line-height:1.4;
+}
+nav.toc a:hover { color:var(--ink); border-left-color:var(--rule-strong); }
+nav.toc a.active { color:var(--accent); border-left-color:var(--accent); font-weight:600; }
+nav.toc a:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+
+main { padding:34px 0 120px; min-width:0; }
+
+.guide[hidden] { display:none; }
+
+/* ----------------------------------------------------------------- type */
+
+section.chunk { padding-bottom:14px; margin-bottom:26px; scroll-margin-top:20px; }
+
+h2 {
+  font-family:Archivo, system-ui, sans-serif; font-weight:700;
+  font-size:1.46rem; letter-spacing:-.015em; line-height:1.18;
+  margin:34px 0 6px; text-wrap:balance;
+  padding-top:14px; border-top:1px solid var(--rule);
+}
+.chunk:first-of-type h2 { margin-top:0; border-top:none; padding-top:0; }
+
+h3 {
+  font-family:Archivo, system-ui, sans-serif; font-weight:600;
+  font-size:1.07rem; letter-spacing:-.005em;
+  margin:26px 0 8px; text-wrap:balance;
+}
+
+h4 {
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px; font-weight:600;
+  letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3);
+  margin:22px 0 8px;
+}
+
+p { margin:0 0 13px; max-width:70ch; }
+ul, ol.body-list { margin:0 0 14px; padding-left:22px; max-width:68ch; }
+li { margin:0 0 5px; }
+
+strong { font-weight:600; color:var(--ink); }
+em { font-style:italic; }
+
+a.inline { color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+
+/* --------------------------------------------------------------- tables */
+
+.tbl { overflow-x:auto; margin:0 0 18px; border:1px solid var(--rule); border-radius:7px; background:var(--surface); }
+table { border-collapse:collapse; width:100%; font-size:.885rem; }
+th {
+  text-align:left; font-family:"IBM Plex Mono", monospace;
+  font-size:10.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-3); padding:10px 13px; border-bottom:1px solid var(--rule); white-space:nowrap;
+}
+td { padding:10px 13px; border-bottom:1px solid var(--rule); vertical-align:top; color:var(--ink-2); }
+tr:last-child td { border-bottom:none; }
+td:first-child { color:var(--ink); font-weight:500; }
+td.num { font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono", monospace; }
+
+/* ----------------------------------------------------------------- code */
+
+code {
+  font-family:"IBM Plex Mono", monospace; font-size:.87em;
+  background:var(--surface-2); padding:1.5px 5px; border-radius:4px; color:var(--ink);
+}
+pre {
+  font-family:"IBM Plex Mono", monospace; font-size:.82rem; line-height:1.55;
+  background:var(--surface); border:1px solid var(--rule); border-radius:7px;
+  padding:14px 16px; margin:0 0 18px; overflow-x:auto; color:var(--ink-2);
+}
+pre code { background:none; padding:0; font-size:1em; color:inherit; }
+
+kbd {
+  font-family:"IBM Plex Mono", monospace; font-size:.8em; font-weight:600;
+  background:var(--surface); border:1px solid var(--rule-strong); border-bottom-width:2px;
+  border-radius:4px; padding:2px 6px; color:var(--ink); white-space:nowrap;
+}
+
+/* -------------------------------------------------------------- callout */
+
+.call { border-left:3px solid; border-radius:0 6px 6px 0; padding:12px 15px; margin:0 0 18px; font-size:.93rem; max-width:70ch; }
+.call p { margin:0; }
+.call p + p { margin-top:8px; }
+.call .lbl {
+  font-family:"IBM Plex Mono", monospace; font-size:10px; font-weight:600;
+  letter-spacing:.13em; text-transform:uppercase; display:block; margin-bottom:5px;
+}
+.call.note  { background:var(--accent-soft); border-color:var(--accent); }
+.call.note .lbl { color:var(--accent); }
+.call.tip   { background:var(--verify-soft); border-color:var(--verify); }
+.call.tip .lbl { color:var(--verify); }
+.call.warn  { background:var(--alert-soft); border-color:var(--alert); }
+.call.warn .lbl { color:var(--alert); }
+
+/* -------------------------------------------------------------- example */
+
+.ex {
+  border:1px solid var(--rule); border-left:3px solid var(--accent);
+  border-radius:0 7px 7px 0; background:var(--surface);
+  padding:13px 16px 14px; margin:0 0 20px;
+}
+.ex > .lbl {
+  font-family:"IBM Plex Mono", monospace; font-size:10px; font-weight:600;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--accent);
+  display:block; margin-bottom:8px;
+}
+.ex p { margin:0 0 10px; font-size:.93rem; }
+.ex p:last-child { margin-bottom:0; }
+.ex pre { background:var(--surface-2); margin:0 0 10px; }
+.ex pre:last-child { margin-bottom:0; }
+
+pre.wire {
+  font-size:.79rem; line-height:1.75; white-space:pre; tab-size:4;
+  color:var(--ink); overflow-x:auto;
+}
+
+/* ------------------------------------------------------------- pin list */
+
+.pins { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 14px; }
+.pin {
+  font-family:"IBM Plex Mono", monospace; font-size:11px; font-weight:500;
+  border:1px solid var(--rule-strong); border-radius:20px; padding:2px 10px;
+  color:var(--ink-2); background:var(--surface);
+}
+.pin.out-ok   { border-color:var(--verify); color:var(--verify); }
+.pin.out-bad  { border-color:var(--alert);  color:var(--alert); }
+
+footer {
+  max-width:1180px; margin:0 auto; padding:24px 32px 60px;
+  border-top:1px solid var(--rule); color:var(--ink-3); font-size:.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } * { transition:none !important; } }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns:1fr; gap:0; padding:0 20px; }
+  nav.toc { position:static; max-height:none; padding:20px 0 8px; border-bottom:1px solid var(--rule); }
+  nav.toc ol { display:flex; flex-wrap:wrap; gap:4px; }
+  nav.toc a { border-left:none; border:1px solid var(--rule); border-radius:20px; padding:4px 11px; font-size:.8rem; }
+  nav.toc a.active { border-color:var(--accent); }
+  .masthead { padding:22px 20px 0; }
+  main { padding-top:24px; }
+  footer { padding:20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <h1>SimFlow Documentation</h1>
+      <span class="version">v1.1.4 &middot; UE 5.6</span>
+    </div>
+    <p class="tagline">A modular, data-driven task and flow framework for VR simulations, tutorials and procedural gameplay. Author procedures as node graphs; run them from a component; drive your UI from what they report.</p>
+    <div class="topbar">
+      <div class="switch" role="tablist">
+        <button role="tab" id="tab-user" aria-controls="guide-user" aria-selected="true">User Guide</button>
+        <button role="tab" id="tab-dev" aria-controls="guide-dev" aria-selected="false">Developer Guide</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" title="Toggle light / dark">Theme</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="toc" aria-label="Contents"><ol id="toc"></ol></nav>
+
+  <main>
+
+  <!-- ================================================== USER GUIDE -->
+  <div class="guide" id="guide-user" role="tabpanel" aria-labelledby="tab-user">
+
+    <section class="chunk" id="u-what">
+      <h2>What SimFlow is</h2>
+      <p>SimFlow runs <em>procedures</em> &mdash; an ordered set of things a person has to do, with rules about what happens when they do them wrong, out of order, or not at all.</p>
+      <p>You author a procedure as a <strong>node graph</strong> asset. A <strong>component</strong> on an actor runs it. Your existing Blueprints feed it events and listen to what it reports.</p>
+
+      <h4>Good fit</h4>
+      <ul>
+        <li>The player must complete steps, and you need to know whether they did</li>
+        <li>Steps have pass/fail conditions, timeouts or scoring</li>
+        <li>The same procedure appears in several scenarios and should be authored once</li>
+        <li>A session might be interrupted and need to resume</li>
+        <li>An instructor needs to skip, retry or fail a step on the trainee's behalf</li>
+      </ul>
+
+      <h4>Not a fit</h4>
+      <ul>
+        <li>Cutscenes and camera work &mdash; use Sequencer</li>
+        <li>Enemy decision-making &mdash; use Behavior Trees</li>
+        <li>Simple one-off triggers &mdash; a Level Blueprint is less machinery</li>
+      </ul>
+    </section>
+
+    <section class="chunk" id="u-install">
+      <h2>Installing and enabling</h2>
+      <ol class="body-list">
+        <li>Copy the <code>SimFlow</code> folder into <code>YourProject/Plugins/SimFlow</code>.</li>
+        <li>Right-click the <code>.uproject</code> &rarr; <strong>Generate Visual Studio project files</strong> (or run <code>GenerateProjectFiles</code>).</li>
+        <li>Build the editor target. SimFlow is a C++ plugin, so the project needs at least one C++ module &mdash; if yours is Blueprint-only, add any empty C++ class once from the editor and Unreal converts it.</li>
+        <li>Enable <strong>SimFlow</strong> in <em>Edit &rarr; Plugins</em> if it is not already on, and restart.</li>
+      </ol>
+      <div class="call note"><span class="lbl">Two modules</span>
+        <p><strong>SimFlowRuntime</strong> ships in packaged builds. <strong>SimFlowEditor</strong> (the graph editor) is stripped on cook. Only node <em>data</em> is packaged, never the visual graph.</p>
+      </div>
+      <p>Targets UE 5.6. It also builds on 5.4/5.5 &mdash; see <a class="inline" href="#d-compat">Engine compatibility</a> in the developer guide for the one line that may need adjusting.</p>
+    </section>
+
+    <section class="chunk" id="u-concepts">
+      <h2>Core concepts</h2>
+      <div class="tbl"><table>
+        <tr><td>Flow asset</td><td>The graph you author (asset type <strong>SimFlow Graph</strong>). A <strong>template</strong>, never modified at runtime, so one asset can drive several actors.</td></tr>
+        <tr><td>Flow instance</td><td>A running copy. Duplicates every node, so each run owns its timers, retry counts and loop counters.</td></tr>
+        <tr><td>Node</td><td>A box in the graph. Execution arrives at an input pin, the node acts, then pushes out through an output pin.</td></tr>
+        <tr><td>Task</td><td>The unit of work inside a Task node. Where the player actually does something. Blueprint-subclassable.</td></tr>
+        <tr><td>Condition</td><td>A yes/no question about the run. Used by Branch nodes and waiting tasks.</td></tr>
+        <tr><td>Blackboard</td><td>Key/value store for the run: score, mistakes, answers, your own state.</td></tr>
+        <tr><td>Event</td><td>A gameplay tag raised from anywhere. How the world tells the flow something happened.</td></tr>
+      </table></div>
+    </section>
+
+    <section class="chunk" id="u-first">
+      <h2>Creating your first flow</h2>
+      <p><strong>Content Browser &rarr; right-click &rarr; SimFlow &rarr; SimFlow Graph.</strong> The new asset opens with a Start node already placed.</p>
+      <ol class="body-list">
+        <li>Right-click empty graph space &rarr; <strong>Tasks &rarr; Task</strong></li>
+        <li>Drag from <code>Start.Out</code> onto the Task node's <code>In</code> pin</li>
+        <li>Select the Task node and set <strong>Task</strong> to one of the built-ins</li>
+        <li><strong>Expand the <code>Task</code> row</strong> &mdash; the arrow beside the dropdown &mdash; to reach the task's own settings</li>
+        <li>Right-click &rarr; <strong>Flow Control &rarr; Complete Flow</strong>, wire <code>Task.Completed</code> into it</li>
+        <li>Save</li>
+      </ol>
+      <p>To run it: add a <strong>SimFlow Component</strong> to any actor, set <strong>Flow Asset</strong>, set <strong>Start Mode</strong> to <em>Auto - On Begin Play</em>, press Play, and type <code>SimFlow.Debug 1</code> in the console.</p>
+      <p>Or skip authoring entirely: <strong>Tools &rarr; SimFlow &rarr; Create Sample VR Tutorial Flow</strong> (console: <code>SimFlow.CreateSample</code>) builds a complete example that exercises every feature and opens it.</p>
+      <div class="call note"><span class="lbl">The Details panel splits in two</span>
+        <p>Time Limit and Auto Retry belong to the <strong>node</strong>. Display Name, Instruction and Score belong to the <strong>task</strong> nested inside it. The node owns <em>how the flow treats this step</em>; the task owns <em>what the step is</em>.</p>
+      </div>
+    </section>
+
+    <section class="chunk" id="u-nodes">
+      <h2>Node reference</h2>
+      <p>A node is the box in the graph. It is woken through one of its <strong>input</strong> pins, does its job, then pushes execution out of one <strong>output</strong> pin and goes back to sleep &mdash; whatever is wired to that output wakes next. A few nodes deliberately stay awake after firing (Parallel, Loop, a racing Join), which is how more than one part of the graph runs at the same time.</p>
+      <p>Every node, whatever its type, also carries a <strong>Node Comment</strong> drawn on the node in the graph, and every node is duplicated per running flow &mdash; so two trainees running the same asset never share node state.</p>
+
+      <div class="tbl"><table>
+        <thead><tr><th>Node</th><th>Category</th><th>Its one job</th></tr></thead>
+        <tr><td>Start</td><td>Flow Control</td><td>Where a run begins. Several per graph, each named</td></tr>
+        <tr><td>Task</td><td>Tasks</td><td>Run one step and route on how it ended</td></tr>
+        <tr><td>Delay</td><td>Flow Control</td><td>Wait, then carry on</td></tr>
+        <tr><td>Branch</td><td>Flow Control</td><td>Take one road out of several, by condition</td></tr>
+        <tr><td>Random Branch</td><td>Flow Control</td><td>Take one road at random, optionally weighted</td></tr>
+        <tr><td>Parallel</td><td>Flow Control</td><td>Take every road at once</td></tr>
+        <tr><td>Join</td><td>Flow Control</td><td>Bring those roads back together, or race them</td></tr>
+        <tr><td>Loop</td><td>Flow Control</td><td>Repeat a section</td></tr>
+        <tr><td>Sub Flow</td><td>Composition</td><td>Run another flow asset as a child</td></tr>
+        <tr><td>Checkpoint</td><td>Persistence</td><td>Name a point in the run, optionally save there</td></tr>
+        <tr><td>Set Blackboard Value</td><td>Data</td><td>Write a key inline, without a task</td></tr>
+        <tr><td>Finish</td><td>Flow Control</td><td>End the whole run with a verdict</td></tr>
+      </table></div>
+
+      <p>Each entry below gives the pins, the properties and a worked example. In the sketches, an indented name is the output pin execution leaves through, and <code>&#9654;</code> points at what it is wired to.</p>
+
+      <!-- ------------------------------------------------------------ Start -->
+      <h3>Start <span class="version">Flow Control</span></h3>
+      <p>Where execution begins. It has <em>no</em> input pin &mdash; nothing in the graph can jump back to a Start node, which is why re-entering a section means looping, not restarting.</p>
+      <p>A graph may hold several Starts with different names. <em>Start Flow</em> uses whichever entry the component's <strong>Entry Name</strong> property names (<code>Default</code> out of the box); <em>Start Flow From Entry</em> overrides it per call. That is how a single asset serves a full scenario, a practice run and an assessment run without duplicating the content &mdash; each entry sets up differently and then dives into the same shared body.</p>
+      <div class="pins"><span class="pin out-ok">Out</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Entry Name</td><td class="num">Default</td><td>Pass this to <em>Start Flow From Entry</em> to begin here</td></tr>
+      </table></div>
+      <div class="ex"><span class="lbl">One asset, three ways in</span>
+        <p>The scenario body lives in a Sub Flow. Each entry decides what the trainee gets before it.</p>
+        <pre class="wire">[Start  "Default"]
+    Out &#9654; [Task  Safety briefing] &#9654; [Sub Flow  Valve_Procedure]
+
+[Start  "Practice"]
+    Out &#9654; [Set Blackboard  bShowHints = true] &#9654; [Sub Flow  Valve_Procedure]
+
+[Start  "Assessment"]
+    Out &#9654; [Set Blackboard  bShowHints = false]
+        &#9654; [Checkpoint  Assessment begins] &#9654; [Sub Flow  Valve_Procedure]</pre>
+        <p>From Blueprint: <code>Start Flow From Entry ("Practice")</code> on the SimFlow Component. The hint tasks inside the shared body sit behind a Branch on <code>bShowHints</code>.</p>
+      </div>
+
+      <!-- ------------------------------------------------------------- Task -->
+      <h3>Task <span class="version">Tasks</span></h3>
+      <p>Runs one task and routes on how it ended. This is the node you will place most, and the only one that shows up as a step to the trainee.</p>
+      <p>The split is worth holding on to: the <strong>node</strong> owns how the flow treats this step &mdash; the time limit, the retries, the early-out &mdash; and the <strong>task</strong> nested inside it owns what the step actually is. Swap the task and the routing survives.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin out-ok">Completed</span><span class="pin out-bad">Failed</span><span class="pin">Skipped</span><span class="pin">TimedOut</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Task</td><td class="num">none</td><td>A built-in or your own Blueprint task</td></tr>
+        <tr><td>Time Limit</td><td class="num">0</td><td>Seconds before leaving via <code>TimedOut</code>. <code>0</code> = no limit</td></tr>
+        <tr><td>Auto Retry on Failure</td><td class="num">off</td><td>Restart automatically when the task fails</td></tr>
+        <tr><td>Auto Retry Limit</td><td class="num">1</td><td>How many automatic restarts</td></tr>
+        <tr><td>Auto Retry on Timeout</td><td class="num">off</td><td>Also auto-retry on timeout</td></tr>
+        <tr><td>Fallback to Completed</td><td class="num">on</td><td>Unwired Failed/Skipped/TimedOut fall through to Completed</td></tr>
+        <tr><td>Abort Condition</td><td class="num">none</td><td>Checked every frame; when it passes the task ends early</td></tr>
+        <tr><td>Abort Result</td><td class="num">Failed</td><td>Which pin an aborted task leaves through</td></tr>
+      </table></div>
+      <p>Each frame the node ticks the task, then evaluates the Abort Condition, then checks the time limit. When the task reports a result the node considers an auto retry <em>first</em>, and only leaves through a pin if it is not retrying &mdash; so a retried task never fires the <code>Failed</code> branch. Auto retry also respects the task's own <strong>Allow Retry</strong> box, so a task marked one-shot stays one-shot.</p>
+      <p><em>Fallback to Completed</em> is what keeps linear flows tidy &mdash; wire only <code>Completed</code> and the rest falls through. It only redirects pins with <em>no</em> link at all. Turn it off when a failure must genuinely stop the flow.</p>
+      <div class="call warn"><span class="lbl">A Task node with no task passes straight through</span>
+        <p>It fires <code>Completed</code> immediately and logs a warning to <code>LogSimFlow</code>. A scenario that races to the end is usually a row of empty Task nodes.</p>
+      </div>
+      <div class="ex"><span class="lbl">A step that can time out into a hint</span>
+        <p>Forty-five seconds to find and put on the gloves. A failure retries itself twice before the flow ever sees it; a timeout sends the trainee round again through a hint.</p>
+        <pre class="wire">[Task  Don the gloves]
+    Task                   Wait For Event  (Sim.Equip.Gloves)
+    Time Limit             45 s
+    Auto Retry on Failure  &#10003;  limit 2
+
+        Completed &#9654; [Checkpoint  Geared up]
+        TimedOut  &#9654; [Task  Log "The gloves are on the shelf by the door"]
+                          Completed &#9654; back into [Task  Don the gloves] . In
+        Failed    &#9654; (unwired &mdash; falls through to Completed)</pre>
+        <p>Wiring a <code>TimedOut</code> hint back into the same node's <code>In</code> is the standard nudge loop. Bound it with the task's Max Retries or with a Loop node around the pair, or a trainee who never finds the gloves never leaves.</p>
+      </div>
+
+      <!-- ------------------------------------------------------------ Delay -->
+      <h3>Delay <span class="version">Flow Control</span></h3>
+      <p>Waits, then continues. The graph's beat &mdash; a pause between two lines of voice-over, a moment for an animation to land, a settling time before you test a gauge.</p>
+      <p>It counts flow time, not wall time: a paused flow does not tick, so a 10 second Delay is 10 seconds of the trainee actually running. A Duration of <code>0</code> passes through on the same frame.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin out-ok">Out</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Duration</td><td class="num">1.0</td><td>Seconds to wait. Respects pause</td></tr>
+      </table></div>
+      <div class="call note"><span class="lbl">Delay node or Delay task?</span>
+        <p>The <strong>node</strong> is invisible scheduling &mdash; it is not a step, so it never appears in the UI or counts toward progress. The <strong>task</strong> is a step the trainee is waiting through, so it shows up, can be skipped, and offers a random extra. Use the node for timing, the task for "hold for 30 seconds while it depressurises".</p>
+      </div>
+      <div class="ex"><span class="lbl">Letting a cutscene breathe</span>
+        <pre class="wire">[Task  Play alarm VO]
+    Completed &#9654; [Delay  2.0 s] &#9654; [Task  Play supervisor VO]
+                                       Completed &#9654; [Delay  0.5 s]
+                                                 &#9654; [Task  Evacuate the area]</pre>
+      </div>
+
+      <!-- ----------------------------------------------------------- Branch -->
+      <h3>Branch <span class="version">Flow Control</span></h3>
+      <p>The graph's if / else-if / else. Cases evaluate top to bottom and the <em>first</em> that passes wins; if none do, execution leaves through <code>Default</code>. Pin labels fall back to the condition's own description, so a well-configured condition labels its pin for free.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin out-ok">Case 0</span><span class="pin out-ok">Case 1</span><span class="pin">Default</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Cases</td><td class="num">2 empty</td><td>Ordered list; each has a Label and a Condition</td></tr>
+        <tr><td>Fire All Matching Cases</td><td class="num">off</td><td>Fire every passing case, giving a conditional fan-out</td></tr>
+        <tr><td>Has Default Pin</td><td class="num">on</td><td>Show a <code>Default</code> pin for when nothing matched</td></tr>
+      </table></div>
+      <p>With <strong>Fire All Matching Cases</strong> on, the Branch becomes a Parallel with entry requirements: every passing case fires at once. The number of live branches then varies at runtime, so do not converge them on a <em>Wait For All</em> Join &mdash; it waits for a fixed count that may never arrive.</p>
+      <p>Turn <strong>Has Default Pin</strong> off and a Branch that matches nothing simply ends that thread of execution. That is a deliberate dead end, and a useful one at the tail of a fan-out.</p>
+      <div class="call warn"><span class="lbl">An empty case is a dead pin, not a "true"</span>
+        <p>A case with no condition never passes. If your Branch always takes <code>Default</code>, check that every case actually has a condition object assigned.</p>
+      </div>
+      <div class="ex"><span class="lbl">Grading at the end of a scenario</span>
+        <pre class="wire">[Branch  3 cases]
+    Case 0  "Distinction"  Score Threshold  &#8805; 90
+        &#9654; [Task  Log "Distinction"] &#9654; [Complete Flow]
+
+    Case 1  "Pass"         Score Threshold  &#8805; 60
+        &#9654; [Task  Log "Pass"] &#9654; [Complete Flow]
+
+    Default
+        &#9654; [Sub Flow  Remediation_Debrief] &#9654; [Fail Flow]</pre>
+        <p>Order is the whole trick. Put <code>&#8805; 60</code> first and it swallows every distinction, because the first match wins.</p>
+      </div>
+
+      <!-- ---------------------------------------------------- Random Branch -->
+      <h3>Random Branch <span class="version">Flow Control</span></h3>
+      <p>Picks one output at random. This is how a scenario stops being memorisable &mdash; run it three times and the fault is different each time, so the trainee has to diagnose rather than recall.</p>
+      <p>Weights are optional and positional: a missing entry counts as <code>1</code>, and a weight of <code>0</code> is never picked. If every weight resolves to zero it falls back to an even pick rather than stalling. <strong>Avoid Repeats</strong> zeroes out whatever came up last, so back-to-back passes through the node &mdash; loop iterations, for instance &mdash; always differ. That memory lasts for the run and resets when the flow restarts.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin out-ok">Out 0</span><span class="pin out-ok">Out 1</span><span class="pin out-ok">&hellip;</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Num Outputs</td><td class="num">2</td><td>2&ndash;16 output pins</td></tr>
+        <tr><td>Weights</td><td class="num">empty</td><td>Optional per-output weight; missing entries count as 1</td></tr>
+        <tr><td>Avoid Repeats</td><td class="num">off</td><td>Never pick the same output twice in a row</td></tr>
+      </table></div>
+      <p>Resolves on the server only, so all clients agree.</p>
+      <div class="ex"><span class="lbl">Three drills, three different faults</span>
+        <p>The common fault comes up twice as often as the exotic ones, and no trainee gets the same fault twice running.</p>
+        <pre class="wire">[Loop  Iterations 3]
+    Loop Body &#9654; [Random Branch  3 outputs
+                                  weights 2 / 1 / 1
+                                  Avoid Repeats &#10003;]
+                      Out 0 &#9654; [Sub Flow  Fault_StuckValve]  &#9472;&#9488;
+                      Out 1 &#9654; [Sub Flow  Fault_LeakingSeal] &#9472;&#9508;
+                      Out 2 &#9654; [Sub Flow  Fault_BadGauge]    &#9472;&#9496;
+                                                            &#9654; [Loop] . Continue
+    Completed &#9654; [Branch  graded?]</pre>
+      </div>
+
+      <!-- --------------------------------------------------------- Parallel -->
+      <h3>Parallel <span class="version">Flow Control</span></h3>
+      <p>Fires every <em>wired</em> output in the same frame, and each becomes an independent live branch with its own active nodes, all ticking together. Unwired pins cost nothing, so leaving Num Outputs at 4 and using two is fine. If nothing at all is wired, the node just ends that thread of execution.</p>
+      <p>The branches share one blackboard. Two branches writing the same key is a race, and it is yours to arrange &mdash; give each branch its own keys unless you mean them to collide.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin out-ok">Out 0</span><span class="pin out-ok">Out 1</span><span class="pin out-ok">&hellip;</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Num Outputs</td><td class="num">2</td><td>2&ndash;16 branches, all fired at once. Unwired outputs are skipped</td></tr>
+      </table></div>
+      <div class="ex"><span class="lbl">Two hands, one procedure</span>
+        <p>The trainee has to keep the gauge in view while turning the valve. Either order is fine; both must happen.</p>
+        <pre class="wire">[Parallel  2 branches]
+    Out 0 &#9654; [Task  Turn the isolation valve] &#9654; [Join] . In 0
+    Out 1 &#9654; [Task  Keep the gauge in view]   &#9654; [Join] . In 1
+
+[Join  Wait For All]
+    Out &#9654; [Task  Report the reading]</pre>
+        <p>Without a Join the two branches just run to their own ends &mdash; acceptable if each finishes in its own Finish node, but the first one reached with <em>Stop Other Branches</em> on will kill the other mid-task.</p>
+      </div>
+
+      <!-- ------------------------------------------------------------- Join -->
+      <h3>Join <span class="version">Flow Control</span></h3>
+      <p>Brings parallel branches back together. <em>Wait For All</em> converges; <em>Wait For Any</em> races.</p>
+      <p><em>Wait For All</em> counts <strong>distinct input pins</strong>, not arrivals &mdash; two hits on <code>In 0</code> still count as one. Give every branch its own pin. When the last one lands the node fires and deactivates, which resets the count, and that is exactly what makes a Join safe to sit inside a Loop.</p>
+      <p><em>Wait For Any</em> fires on the first arrival and then stays alive on purpose, so the losing branch's arrival is swallowed and the section downstream can never run twice.</p>
+      <div class="pins"><span class="pin">In 0</span><span class="pin">In 1</span><span class="pin">&hellip;</span><span class="pin out-ok">Out</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Num Inputs</td><td class="num">2</td><td>2&ndash;16 input pins</td></tr>
+        <tr><td>Mode</td><td class="num">Wait For All</td><td><em>Wait For All</em> converges; <em>Wait For Any</em> races</td></tr>
+      </table></div>
+      <div class="call warn"><span class="lbl">Wait For Any leaves the loser running</span>
+        <p>The Join stays alive to swallow the late arrival so downstream cannot fire twice &mdash; but the losing branch's task keeps running until the flow ends. For a timeout on a <em>single</em> task, the Task node's own Time Limit is better.</p>
+      </div>
+      <div class="ex"><span class="lbl">Putting a clock on a whole section</span>
+        <p>Two minutes to complete the shutdown. The Join does not report which arm won, so the work arm raises a flag before it arrives and a Branch reads it afterwards.</p>
+        <pre class="wire">[Parallel  2 branches]
+    Out 0 &#9654; [Sub Flow  Shutdown_Procedure]
+              Completed &#9654; [Set Blackboard  bInTime = true] &#9654; [Join] . In 0
+    Out 1 &#9654; [Delay  120 s] &#9654; [Join] . In 1
+
+[Join  Wait For Any]
+    Out &#9654; [Branch]
+              Case 0  "In time"  Blackboard Compare  bInTime == true
+                  &#9654; [Complete Flow]
+              Default
+                  &#9654; [Fail Flow]</pre>
+      </div>
+
+      <!-- ------------------------------------------------------------- Loop -->
+      <h3>Loop <span class="version">Flow Control</span></h3>
+      <p>Repeats a section. Its two inputs do different jobs: <code>In</code> starts a fresh loop and resets the counter to zero, <code>Continue</code> advances it by one. Wire the tail of the body back into <code>Continue</code> &mdash; forget that and the body runs exactly once and the graph stalls.</p>
+      <p>Each pass it checks, in order: the Max Iterations safety valve, then the iteration count, then the Break Condition; then it writes the current 0-based iteration to the blackboard key if you gave one, and finally fires <code>Loop Body</code>. Because the break is checked <em>before</em> each pass including the first, a condition that is already true means the body never runs at all.</p>
+      <p>Set Iterations to <code>0</code> to mean "until the break condition passes". With <code>0</code> and no break condition you are relying on Max Iterations, and you get a warning in <code>LogSimFlow</code> when it trips.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin">Continue</span><span class="pin out-ok">Loop Body</span><span class="pin out-ok">Completed</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Iterations</td><td class="num">3</td><td>Number of passes. <code>0</code> = until the break condition passes</td></tr>
+        <tr><td>Break Condition</td><td class="num">none</td><td>Checked before each pass; passing exits via Completed</td></tr>
+        <tr><td>Max Iterations</td><td class="num">1000</td><td>Safety valve so a bad loop cannot hang the game</td></tr>
+        <tr><td>Iteration Blackboard Key</td><td class="num">none</td><td>Writes the current 0-based iteration here</td></tr>
+      </table></div>
+      <div class="ex"><span class="lbl">Three practice reps, with an early exit</span>
+        <p>Up to three attempts, but a clean run ends it early. The iteration is written to <code>Rep</code> so a task's instruction text can say which attempt this is.</p>
+        <pre class="wire">[Loop  Iterations 3
+       Iteration Blackboard Key  "Rep"
+       Break Condition  Blackboard Compare  CleanRun == true]
+
+    Loop Body &#9654; [Task  Perform the isolation check]
+                    Completed &#9654; [Set Blackboard  CleanRun = true]
+                                &#9654; [Loop] . Continue
+                    Failed    &#9654; [Task  Show the hint]
+                                &#9654; [Loop] . Continue
+
+    Completed &#9654; [Branch  did they get a clean run?]</pre>
+        <p>Both result pins route back into <code>Continue</code>, so a failed rep still counts as a rep. Route only <code>Failed</code> back and you get "retry until correct" instead.</p>
+      </div>
+
+      <!-- --------------------------------------------------------- Sub Flow -->
+      <h3>Sub Flow <span class="version">Composition</span></h3>
+      <p>Runs another flow asset as a child. This is what makes procedures reusable &mdash; build "put on the PPE" once, drop it into every scenario, fix it in one place.</p>
+      <p>The node owns the child completely: it ticks it, pauses and resumes with it, and stops it if the parent stops. Sub Flows may nest, and each level is a real instance, so the debug HUD shows both.</p>
+      <p>The two blackboard boxes decide how much the child sees. Both on and parent and child share state. Both off and the child is a sealed box &mdash; the right choice for a reusable procedure whose scratch keys should not leak into every scenario that uses it.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin out-ok">Completed</span><span class="pin out-bad">Failed</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Sub Flow</td><td class="num">none</td><td>The flow asset to run</td></tr>
+        <tr><td>Entry Name</td><td class="num">Default</td><td>Which Start node of the child to use</td></tr>
+        <tr><td>Inherit Blackboard</td><td class="num">on</td><td>Copy the parent's blackboard into the child at start</td></tr>
+        <tr><td>Write Back Blackboard</td><td class="num">on</td><td>Copy the child's back when it ends</td></tr>
+      </table></div>
+      <p>The child's final state picks the pin: <code>Completed</code> for a completed child, <code>Failed</code> for a failed or aborted one. An unwired <code>Failed</code> falls through to <code>Completed</code>, the same as on a Task node. Skipping the node from the UI stops the child and leaves via <code>Completed</code>.</p>
+      <div class="ex"><span class="lbl">A PPE procedure used by every scenario</span>
+        <p><code>PPE_Donning</code> is its own asset with its own Start, its own tasks, and its own Complete and Fail nodes. Every scenario opens with it.</p>
+        <pre class="wire">[Start]
+    Out &#9654; [Sub Flow  PPE_Donning]
+              Entry Name          "Default"
+              Inherit Blackboard  &#10003;   (child can read bShowHints)
+              Write Back          &#10003;   (Score and Mistakes come home)
+
+                  Completed &#9654; [Checkpoint  Geared up]
+                              &#9654; [Sub Flow  Valve_Procedure]
+                  Failed    &#9654; [Task  Log "Fix your PPE and try again"]
+                              &#9654; back into [Sub Flow  PPE_Donning] . In</pre>
+      </div>
+
+      <!-- ------------------------------------------------------- Checkpoint -->
+      <h3>Checkpoint <span class="version">Persistence</span></h3>
+      <p>Does two things and then gets out of the way. It announces that a named point in the run has been reached &mdash; the instance broadcasts it, so your UI can say "Section 2 of 4" or an analytics hook can log the time &mdash; and it can optionally write a save right there.</p>
+      <p>It passes through the same frame and costs essentially nothing, so be liberal with them: at each phase boundary, and after anything expensive to redo.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin out-ok">Out</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Checkpoint Id</td><td class="num">none</td><td>Your name for this point</td></tr>
+        <tr><td>Auto Save</td><td class="num">off</td><td>Write a save the moment this node is reached</td></tr>
+        <tr><td>Save Slot Name</td><td class="num">empty</td><td>Blank uses the component's default slot</td></tr>
+        <tr><td>Save User Index</td><td class="num">0</td><td>SaveGame user index</td></tr>
+      </table></div>
+      <div class="call note"><span class="lbl">Saving is server-only</span>
+        <p>In multiplayer an Auto Save on a client does nothing. Put the checkpoint wherever you like; the write happens on the authority.</p>
+      </div>
+      <div class="ex"><span class="lbl">A long scenario that survives a crash</span>
+        <pre class="wire">[Sub Flow  PPE_Donning]
+    Completed &#9654; [Checkpoint  "Phase1_Geared"   Auto Save &#10003;]
+                &#9654; [Sub Flow  Valve_Procedure]
+                     Completed &#9654; [Checkpoint  "Phase2_Isolated"  Auto Save &#10003;]
+                                 &#9654; [Sub Flow  Handover]</pre>
+        <p>A resumed session picks up at the last checkpoint written rather than at the start of a forty-minute run.</p>
+      </div>
+
+      <!-- --------------------------------------------- Set Blackboard Value -->
+      <h3>Set Blackboard Value <span class="version">Data</span></h3>
+      <p>Writes a key inline, no task object needed. A pair of these plus a Branch is how most scenario state gets managed.</p>
+      <p><strong>Add</strong> accumulates onto the existing value instead of replacing it &mdash; the cheap way to count mistakes, points or attempts.</p>
+      <div class="pins"><span class="pin">In</span><span class="pin out-ok">Out</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Key</td><td class="num">none</td><td>Which key to write</td></tr>
+        <tr><td>Value</td><td class="num">none</td><td>Bool, Int, Float, String, Name, Vector or Object</td></tr>
+        <tr><td>Add</td><td class="num">off</td><td>Add to the existing value instead of replacing</td></tr>
+      </table></div>
+      <div class="call note"><span class="lbl">Node or task?</span>
+        <p>Use the <strong>node</strong> for bookkeeping the trainee should not see &mdash; it is not a step, so it never appears in the UI or in progress. Use the <strong>Set Blackboard Value task</strong> when the write genuinely is a step in the procedure.</p>
+      </div>
+      <div class="ex"><span class="lbl">Counting mistakes and gating on them</span>
+        <pre class="wire">[Task  Quiz  "Which valve isolates the line?"]
+    Completed &#9654; [Task  Quiz  Q2]
+    Failed    &#9654; [Set Blackboard  Mistakes += 1   (Add &#10003;)]
+                &#9654; [Task  Show the correct answer] &#9654; [Task  Quiz  Q2]
+
+    &hellip; later &hellip;
+
+[Branch]
+    Case 0  "Too many mistakes"  Blackboard Compare  Mistakes &#8805; 3
+        &#9654; [Fail Flow]
+    Default
+        &#9654; [Complete Flow]</pre>
+      </div>
+
+      <!-- ----------------------------------------------------------- Finish -->
+      <h3>Finish <span class="version">Flow Control</span></h3>
+      <p>Ends the whole run with a verdict. It has an input pin and nothing else &mdash; nothing runs after it.</p>
+      <p>The mode sets the run's final state, which is what <em>On Flow Finished</em> reports to Blueprint and what a parent Sub Flow node reads to choose between its <code>Completed</code> and <code>Failed</code> pins. Changing the mode retitles and recolours the node in the graph.</p>
+      <div class="pins"><span class="pin">In</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Finish Mode</td><td class="num">Complete</td><td>Complete / Fail / Abort. Changing it recolours and retitles the node</td></tr>
+        <tr><td>Stop Other Branches</td><td class="num">on</td><td>Kill anything still running in parallel</td></tr>
+      </table></div>
+      <div class="call note"><span class="lbl">Why the menu only lists one</span>
+        <p>There is no separate "Fail Flow" entry to add &mdash; change <strong>Finish Mode</strong> on a placed node instead.</p>
+      </div>
+      <p>A flow can also end without ever reaching one: when the last live branch runs out of wired outputs the instance completes on its own and logs that it hit a dead end. A Finish node is how you end a run <em>deliberately</em>, and the only way to end one as a failure.</p>
+      <div class="ex"><span class="lbl">A pass / fail terminal</span>
+        <pre class="wire">[Branch  graded?]
+    Case 0  "Pass"  Score Threshold &#8805; 60
+        &#9654; [Task  Log "Scenario complete"]
+          &#9654; [Complete Flow   Stop Other Branches &#10003;]
+    Default
+        &#9654; [Task  Log "Scenario failed - see the debrief"]
+          &#9654; [Fail Flow       Stop Other Branches &#10003;]</pre>
+        <p>With <em>Stop Other Branches</em> on, a monitoring branch still watching a gauge somewhere in the graph is torn down cleanly instead of ticking on past the end of the run.</p>
+      </div>
+    </section>
+
+    <section class="chunk" id="u-tasks">
+      <h2>Task reference</h2>
+
+      <h3>Settings every task has</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Display Name</td><td class="num">empty</td><td>Short name for the node, the HUD and your UI</td></tr>
+        <tr><td>Instruction</td><td class="num">empty</td><td>The sentence the player reads</td></tr>
+        <tr><td>Task Id</td><td class="num">none</td><td>Stable name so Blueprints / analytics can identify this task</td></tr>
+        <tr><td>Allow Retry</td><td class="num">on</td><td>May this task be retried</td></tr>
+        <tr><td>Max Retries</td><td class="num">0</td><td><code>0</code> = unlimited. Exceeding it fails the task</td></tr>
+        <tr><td>Allow Skip</td><td class="num">on</td><td>May this task be skipped</td></tr>
+        <tr><td>Tick While Paused</td><td class="num">off</td><td>Almost always leave off</td></tr>
+        <tr><td>Score on Success</td><td class="num">0</td><td>Added to the <code>Score</code> key on success</td></tr>
+        <tr><td>Score on Failure</td><td class="num">0</td><td>Added (usually negative) on failure or timeout</td></tr>
+      </table></div>
+
+      <h3>Delay</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Duration</td><td class="num">1.0</td><td>Seconds</td></tr>
+        <tr><td>Random Extra</td><td class="num">0.0</td><td>Adds up to this many extra seconds, at random</td></tr>
+      </table></div>
+
+      <h3>Log Message</h3>
+      <p>Prints and succeeds immediately. Good for roughing out a flow before the real tasks exist.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Message</td><td class="num">SimFlow</td><td>Text to log</td></tr>
+        <tr><td>Print to Screen</td><td class="num">on</td><td>Also show on screen</td></tr>
+        <tr><td>Screen Duration</td><td class="num">3.0</td><td>Seconds</td></tr>
+      </table></div>
+
+      <h3>Set Blackboard Value</h3>
+      <p>Writes a key and succeeds immediately. Same three properties as the node version (<code>Key</code>, <code>Value</code>, <code>Add</code>).</p>
+
+      <h3>Wait For Event</h3>
+      <p>Blocks until a gameplay tag is raised. The main way world interactions advance a flow.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Event Tag</td><td class="num">none</td><td>The tag to listen for</td></tr>
+        <tr><td>Match Child Tags</td><td class="num">on</td><td>Listening for <code>Sim.Grab</code> also accepts <code>Sim.Grab.Extinguisher</code></td></tr>
+        <tr><td>Accept Already Raised</td><td class="num">off</td><td>Succeed at once if the tag fired earlier this run</td></tr>
+        <tr><td>Expected Payload</td><td class="num">empty</td><td>Which object the event has to be about. Empty = any sender will do</td></tr>
+        <tr><td>Mismatch Policy</td><td class="num">Count Mistake</td><td>What happens when the tag is right but the object is not</td></tr>
+        <tr><td>Payload To Blackboard Key</td><td class="num">none</td><td>Store the accepted object here for later tasks</td></tr>
+      </table></div>
+      <p><strong>Expected Payload</strong> is what lets ten buttons broadcast the same tag while only the intended one advances the flow. Each button sends itself as the payload and knows nothing about the exercise; the flow asset holds the answer. See <a href="#u-identity">Recognising objects</a>.</p>
+      <p>Bind <strong>On Payload Rejected</strong> for the buzzer or the hint &mdash; it passes the object and the match quality, so a near miss can get different feedback from a random prop.</p>
+      <div class="call warn"><span class="lbl">The most common setup mistake</span>
+        <p>Leave <strong>Event Tag</strong> unset and the task <em>succeeds instantly</em> &mdash; there is nothing to wait for. A warning appears in the Output Log, and the score is still awarded, so it can look like the step worked.</p>
+      </div>
+      <div class="call note"><span class="lbl">Accept Already Raised and payloads</span>
+        <p>When <strong>Expected Payload</strong> is set, <strong>Accept Already Raised</strong> is ignored and a verbose line is logged. A past event kept only its tag, so there is no object left to check &mdash; honouring the flag would let the wrong one satisfy the task.</p>
+      </div>
+      <div class="call warn"><span class="lbl">A widget cannot be a payload</span>
+        <p><code>self</code> in a UMG graph is a <code>UUserWidget</code> &mdash; neither an Actor nor an Actor Component &mdash; so a query finds no actor behind it and always scores <code>No Match</code>. Broadcast from the owning actor instead. Since 1.1.3 the log names the offending class rather than leaving you with a task that never completes.</p>
+      </div>
+
+      <h3>Wait For Condition</h3>
+      <p>Blocks until a condition becomes true. For continuous checks &mdash; "the valve is past 90 degrees", "the player is holding the drill".</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Condition</td><td class="num">none</td><td></td></tr>
+        <tr><td>Check Interval</td><td class="num">0.1</td><td>Seconds between evaluations. <code>0</code> = every frame</td></tr>
+        <tr><td>Required Hold Time</td><td class="num">0.0</td><td>The condition must stay true this long</td></tr>
+      </table></div>
+
+      <h3>Go To Location</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Target Location</td><td class="num">origin</td><td>Where to go (has an in-viewport edit widget)</td></tr>
+        <tr><td>Target From Blackboard Key</td><td class="num">none</td><td>Read the target from this key instead</td></tr>
+        <tr><td>Relative to Flow Owner</td><td class="num">off</td><td>Treat Target Location as relative to the owning actor</td></tr>
+        <tr><td>Acceptance Radius</td><td class="num">150</td><td>cm</td></tr>
+        <tr><td>Ignore Z</td><td class="num">on</td><td>Ignore height, which is sensible when HMD height varies</td></tr>
+        <tr><td>Draw Debug Sphere</td><td class="num">off</td><td>Show the target while the task runs</td></tr>
+      </table></div>
+
+      <h3>Quiz</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Question</td><td class="num">empty</td><td></td></tr>
+        <tr><td>Options</td><td class="num">empty</td><td>The answers, in order</td></tr>
+        <tr><td>Correct Option Index</td><td class="num">0</td><td></td></tr>
+        <tr><td>Additional Correct Indices</td><td class="num">empty</td><td>For multi-answer questions</td></tr>
+        <tr><td>Answer Blackboard Key</td><td class="num">none</td><td>Also write the submitted index here</td></tr>
+        <tr><td>Fail on Wrong Answer</td><td class="num">on</td><td>A wrong answer leaves via <code>Failed</code></td></tr>
+        <tr><td>Count Mistakes</td><td class="num">on</td><td>Increment the <code>Mistakes</code> key</td></tr>
+      </table></div>
+      <p>Bind <strong>On Quiz Presented</strong> to show your widget, then call <strong>Submit Quiz Answer</strong> (component / status widget) or <strong>Submit Answer</strong> (on the quiz task) with the chosen index. It fires <strong>On Quiz Answered</strong> with the index and whether it was correct.</p>
+
+      <h3>Parallel Group</h3>
+      <p>Runs several child tasks at once inside a single node &mdash; lighter than Parallel/Join when the branches are just tasks.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Tasks</td><td class="num">empty</td><td>Child tasks</td></tr>
+        <tr><td>Wait For All</td><td class="num">on</td><td>Off = finish as soon as the first child finishes</td></tr>
+        <tr><td>Fail If Any Child Fails</td><td class="num">on</td><td></td></tr>
+      </table></div>
+
+      <h3>Place Object In Zone <span class="version">1.1.2</span></h3>
+      <p>&ldquo;Put the foam extinguisher in the bay.&rdquo; Watches a <strong>SimFlow Zone</strong> and judges what turns up in it. The zone reports what is there without an opinion; this task holds the opinion, so the same bay can be the right answer in one exercise and a distractor in the next without touching a Blueprint.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Zone</td><td class="num">empty</td><td>Actor Query for the zone, usually a tag like <code>Zone.PartsBin</code></td></tr>
+        <tr><td>Accepted Items</td><td class="num">empty</td><td>What belongs there. Tags are the useful form, since they cover spawned copies</td></tr>
+        <tr><td>Required Count</td><td class="num">1</td><td>How many accepted items must be in the zone at once</td></tr>
+        <tr><td>Wrong Item Policy</td><td class="num">Count Mistake</td><td>Ignore / Count Mistake (keep waiting) / Fail Task</td></tr>
+      </table></div>
+      <p>Two queries and two choices is the whole task. The rest sits behind the <strong>Advanced</strong> arrow, and most drills never open it:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Advanced</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Rejected Items</td><td class="num">empty</td><td>Subtracts from an open-ended accepted family: accept <code>Item.Extinguisher</code>, reject <code>Item.Extinguisher.CO2</code>, and the rule still holds when a new variant is added. Empty is the normal case</td></tr>
+        <tr><td>Require Settled</td><td class="num">on</td><td>Wait until the item is put down, not merely overlapping. Leave it on and let the zone&rsquo;s <em>Settle Mode</em> decide how patient to be</td></tr>
+        <tr><td>Report Each Wrong Item Once</td><td class="num">on</td><td>Do not re-report the same item every time it settles again</td></tr>
+        <tr><td>Placed Item Blackboard Key</td><td class="num">none</td><td>Stores the last accepted item</td></tr>
+      </table></div>
+      <p>Bind <strong>On Wrong Item Placed</strong> &mdash; it passes the actor and the match quality, so &ldquo;right idea, wrong agent&rdquo; and &ldquo;that is a wrench&rdquo; can say different things. Taking a wrong item back out lets it be reported again.</p>
+      <div class="call note"><span class="lbl">Rejected Items is rarely the answer <span class="version">1.1.4</span></span>
+        <p>Grading comes from the tags. The CO2 unit already scores <em>Related</em> against <code>Item.Extinguisher.Foam</code> because they share two leading nodes, so the &ldquo;close, that is the CO2 unit&rdquo; branch works with <strong>Rejected Items</strong> completely empty.</p>
+        <p>The field only vetoes an accept &mdash; it cannot promote anything, so listing an unrelated object there does not make it a near miss. Reach for it when you accept a whole tag family and need to carve one item out of it.</p>
+      </div>
+      <div class="call warn"><span class="lbl">Needs a real zone</span>
+        <p>The <strong>Zone</strong> query must resolve to an <code>ASimFlowZone</code>. An arbitrary trigger volume will not do; the task fails and logs a warning naming the query it could not resolve.</p>
+      </div>
+
+      <h3>Ordered Sequence <span class="version">1.1.2</span></h3>
+      <p>&ldquo;Press these three buttons, in this order.&rdquo; Every candidate broadcasts the same tag with itself as the payload and knows nothing about the procedure; this task holds the order. Acting out of turn is a first-class outcome rather than something you notice by accident.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tr><td>Event Tag</td><td class="num">none</td><td>What every candidate raises, e.g. <code>SimFlow.Event.ButtonPressed</code></td></tr>
+        <tr><td>Match Child Tags</td><td class="num">on</td><td>As Wait For Event</td></tr>
+        <tr><td>Steps</td><td class="num">empty</td><td>The expected order. Each step has a <em>Target</em> query and <em>Instruction</em> text</td></tr>
+        <tr><td>Out Of Order Policy</td><td class="num">Count Mistake</td><td>Ignore / Count Mistake (stay on step) / Restart Sequence / Fail Task</td></tr>
+        <tr><td>Unlisted Input Is Mistake</td><td class="num">off</td><td>Treat props that are not part of the sequence as errors too</td></tr>
+        <tr><td>Step Blackboard Key</td><td class="num">none</td><td>Publishes the current step index for a progress widget</td></tr>
+      </table></div>
+      <p>Doing step 4 when step 2 was expected is recorded at <code>Related</code> severity &mdash; it is part of the procedure, just early. An unrelated prop is <code>No Match</code>, and is ignored entirely unless <strong>Unlisted Input Is Mistake</strong> is on. <strong>Get Current Step Instruction</strong> feeds your tutorial panel.</p>
+    </section>
+
+    <section class="chunk" id="u-identity">
+      <h2>Recognising objects</h2>
+      <p>Flows need to name things in the level &mdash; <em>that</em> button, <em>a</em> foam extinguisher. Before 1.1.2 there was nowhere to put that, so the check ended up hardcoded in Blueprint.</p>
+      <div class="call note"><span class="lbl">The rule</span>
+        <p><strong>Blueprint reports neutral facts; the flow asset decides whether they were correct.</strong> A button broadcasts that it was pressed and sends itself as the payload &mdash; it never learns which exercise is running. Change which button is right by editing one field in the flow asset. The same room then serves a dozen scenarios, and nothing rots when you author the second one.</p>
+      </div>
+
+      <h3>The identity component</h3>
+      <p>Add <strong>SimFlow Identity</strong> to the item Blueprint &mdash; not to each level instance &mdash; and set its tags. Every placed and spawned copy carries them.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Blueprint</th><th>Identity Tags</th></tr></thead>
+        <tr><td><code>BP_Extinguisher_Foam</code></td><td><code>Item.Extinguisher.Foam</code></td></tr>
+        <tr><td><code>BP_Extinguisher_CO2</code></td><td><code>Item.Extinguisher.CO2</code></td></tr>
+        <tr><td><code>BP_Wrench</code></td><td><code>Item.Tool.Wrench</code></td></tr>
+      </table></div>
+      <p>Gameplay tags rather than <code>AActor::Tags</code> on purpose: they are validated at author time, they autocomplete, and they nest &mdash; which is what makes the next part possible. Actors already tagged for GAS work too; the lookup falls back to <code>IGameplayTagAssetInterface</code>.</p>
+
+      <h3>Actor Query</h3>
+      <p>Every new task refers to objects through this struct. Fill in one field; it resolves in order.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Field</th><th>Use it for</th></tr></thead>
+        <tr><td>Specific Actor</td><td>&ldquo;that button&rdquo;, one placed level actor</td></tr>
+        <tr><td>Blackboard Key</td><td>a target chosen at runtime, e.g. a randomised assignment</td></tr>
+        <tr><td>Required Tags</td><td>&ldquo;any foam extinguisher&rdquo;, the only form that covers spawned copies</td></tr>
+        <tr><td>Required Class / Required Actor Tag</td><td>narrowing, and actors you cannot add a component to</td></tr>
+      </table></div>
+
+      <h3>How wrong was it?</h3>
+      <p>Because tags nest, one field gives three levels of strictness &mdash; <code>Item.Extinguisher</code> accepts either extinguisher, <code>Item.Extinguisher.Foam</code> only one. More usefully, a failed match is still graded:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Player used</th><th>vs. <code>Item.Extinguisher.Foam</code></th><th>Feedback you can give</th></tr></thead>
+        <tr><td><code>Item.Extinguisher.Foam</code></td><td>Exact</td><td>correct</td></tr>
+        <tr><td><code>Item.Extinguisher.CO2</code></td><td>Related</td><td>&ldquo;Right idea &mdash; wrong agent for this fire class.&rdquo;</td></tr>
+        <tr><td><code>Item.Tool.Wrench</code></td><td>No Match</td><td>&ldquo;That isn't a fire extinguisher.&rdquo;</td></tr>
+      </table></div>
+      <p><strong>Min Related Tag Depth</strong> (default 2) sets how many leading tag nodes two tags must share to count as a near miss. A boolean match cannot express this, which is why the whole layer is built on tags.</p>
+      <div class="call warn"><span class="lbl">Streamed levels</span>
+        <p><strong>Specific Actor</strong> is a soft pointer resolved without a synchronous load. An actor in an unloaded World Partition cell or streaming sublevel will not resolve &mdash; use identity tags or a blackboard key for streamed content.</p>
+      </div>
+
+      <h3>Zones</h3>
+      <p>Drop an <strong>ASimFlowZone</strong>, size the box, and give its identity component a tag like <code>Zone.PartsBin</code>. It reports what is inside without judging it. It carries the same identity component as items rather than its own tagging scheme &mdash; one mechanism for everything a flow can name.</p>
+      <p>A trainee holding an item over the bin has not put it down, so overlapping and placed are different events:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Delegate</th><th>Fires when</th></tr></thead>
+        <tr><td>On Actor Entered</td><td>overlap begins; may still be in the trainee's hand</td></tr>
+        <tr><td>On Actor Settled</td><td>not held, and at rest for as long as <em>Settle Mode</em> asks</td></tr>
+        <tr><td>On Actor Exited</td><td>overlap ends</td></tr>
+      </table></div>
+      <p>Pick the item back up and its settle timer restarts.</p>
+      <p>How patient the zone is about that is one field, <strong>Settle Mode</strong> <span class="version">1.1.4</span>:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Settle Mode</th><th>Means</th></tr></thead>
+        <tr><td>Instant</td><td>Placed the moment it is inside and out of the trainee&rsquo;s hands. For sockets, snap points and buttons, where the item arrives already positioned</td></tr>
+        <tr><td>Standard</td><td>A <code>0.35 s</code> pause, and physics objects must drop below <code>20</code> speed. Suits anything put down by hand</td></tr>
+        <tr><td>Custom</td><td>Reveals <em>Settle Time</em>, <em>Settle Speed Threshold</em> and <em>Require Detached</em>. For heavy props that jitter on uneven collision</td></tr>
+      </table></div>
+      <p>Switching away from Custom resets those three to the chosen mode&rsquo;s values, so the numbers you see under Custom are always the numbers the zone is really using. <em>Track Filter</em>, <em>Require Identity Component</em> and <em>Broadcast Flow Events</em> sit behind the <strong>Advanced</strong> arrow; the last of those additionally raises <code>SimFlow.Event.Placed</code> / <code>.Removed</code> with the actor as payload, so a plain Wait For Event task can use a zone too.</p>
+      <div class="call warn"><span class="lbl">Tell the zone when an item is held <span class="version">1.1.3</span></span>
+        <p>On grab, call <strong>SimFlow Identity &rarr; Set Held (true)</strong>; on release, <code>false</code>. Two nodes, and placement becomes exact.</p>
+        <p>Without them a zone can only infer release from <code>GetAttachParentActor()</code>, which is wrong for any grab system that holds objects with a physics constraint rather than reparenting them. VRExpansion is one: of its twelve <code>EGripCollisionType</code> values only <code>AttachmentGrip</code> uses native attachment, so a gripped item looks detached from outside and a trainee can hold it steady over the zone and pass the step without letting go.</p>
+        <p>The other thing to check: a zone only sees items whose collision responds to <code>OverlapAllDynamic</code>. An item set to <code>NoCollision</code> is invisible to it however correct its tags are.</p>
+      </div>
+
+      <h3>Mistakes and debrief</h3>
+      <p>Trainees are graded on what they got wrong, so a mistake is a record rather than a counter. Each one carries the kind tag, a ready-to-show description, the severity, the object involved and the time into the run.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Call</th><th>Gives you</th></tr></thead>
+        <tr><td>Get Mistakes</td><td>the whole list, for a debrief screen</td></tr>
+        <tr><td>Get Mistakes Of Kind</td><td>a filter, e.g. everything tagged <code>SimFlow.Mistake.WrongItem</code></td></tr>
+        <tr><td>Get Mistake Count</td><td>the quick number</td></tr>
+        <tr><td>On Mistake Recorded</td><td>a live delegate for an instructor HUD</td></tr>
+      </table></div>
+      <p>Mistakes are cleared by <strong>Start Instance</strong> and saved with the flow &mdash; minus the live object pointer, which is why each entry also stores the name it had when recorded. The <code>Mistakes</code> blackboard key is still incremented alongside, so conditions you have already written are unaffected.</p>
+      <p>In your own Blueprint task, call <strong>Record Mistake</strong>, or <strong>Apply Mismatch Policy</strong> to get the same Ignore / Count / Fail handling the built-ins use.</p>
+    </section>
+
+    <section class="chunk" id="u-conditions">
+      <h2>Condition reference</h2>
+      <p>Conditions plug into Branch cases, the <em>Wait For Condition</em> task, a Task node's Abort Condition, and Loop break conditions. Every one has an <strong>Invert</strong> box, so you rarely need a NOT wrapper.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Condition</th><th>Properties</th><th>True when</th></tr></thead>
+        <tr><td>Blackboard Compare</td><td>Key, Operation, Value, Result When Key Missing</td><td>The key compares as specified</td></tr>
+        <tr><td>Score Threshold</td><td>Operation, Threshold</td><td>The run score passes the threshold (shorthand for a compare on <code>Score</code>)</td></tr>
+        <tr><td>Last Task Result Is</td><td>Expected Result</td><td>The most recent task ended that way</td></tr>
+        <tr><td>Elapsed Time</td><td>Operation, Seconds</td><td>The flow has run more/less than that</td></tr>
+        <tr><td>Event Was Raised</td><td>Event Tag</td><td>That tag fired at some point this run</td></tr>
+        <tr><td>All Of (AND)</td><td>Conditions</td><td>Every child passes</td></tr>
+        <tr><td>Any Of (OR)</td><td>Conditions</td><td>At least one child passes</td></tr>
+        <tr><td>Constant</td><td>Value</td><td>Always. A placeholder, or a deliberate always-branch</td></tr>
+        <tr><td>Player Near Location</td><td>Location, Radius, Location From Blackboard Key, Ignore Z</td><td>The pawn is within radius</td></tr>
+      </table></div>
+      <p>Operators: <code>==</code> <code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code>. Strings and Names compare textually for equality, numerically otherwise.</p>
+    </section>
+
+    <section class="chunk" id="u-blackboard">
+      <h2>The blackboard</h2>
+      <p>One typed key/value store per run &mdash; Bool, Int, Float, String, Name, Vector or Object.</p>
+      <pre><code>Get Primary Flow &rarr; Get Blackboard &rarr; Set Float ("ValveAngle", 92.0)
+Get Primary Flow &rarr; Get Blackboard &rarr; Get Float ("ValveAngle")</code></pre>
+      <p>To seed starting values, select the flow asset itself (click empty graph space) and fill in <strong>Initial Blackboard</strong>.</p>
+      <h4>Keys the built-ins use</h4>
+      <div class="tbl"><table>
+        <thead><tr><th>Key</th><th>Written by</th></tr></thead>
+        <tr><td>Score</td><td>Score on Success / Failure, and <code>Add Score</code></td></tr>
+        <tr><td>Mistakes</td><td>Quiz, on a wrong answer</td></tr>
+        <tr><td>LastResult</td><td>Every task, when it finishes</td></tr>
+        <tr><td>LastAnswerIndex</td><td>Quiz</td></tr>
+        <tr><td>LastAnswerCorrect</td><td>Quiz</td></tr>
+      </table></div>
+      <div class="call warn"><span class="lbl">Object values</span>
+        <p>Not saved and not replicated. Store a tag or a name instead and resolve the actor at runtime.</p>
+      </div>
+    </section>
+
+    <section class="chunk" id="u-events">
+      <h2>Events</h2>
+      <p>Gameplay tags are how your project tells a flow that something happened. No reference to the flow is needed.</p>
+      <pre><code>Event On Component Begin Overlap
+ &#x2514;&#x2500; Broadcast Flow Event
+      World Context : self
+      Event Tag     : Sim.Station.Reached
+      Payload       : self</code></pre>
+      <p>Any <em>Wait For Event</em> task listening for that tag (or a parent tag, with Match Child Tags on) completes. An <em>Event Was Raised</em> condition also picks it up.</p>
+      <p>Shipped native tags live under <code>SimFlow.Event</code>:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Tag</th><th>Intent</th></tr></thead>
+        <tr><td>SimFlow.Event.Generic</td><td>Catch-all</td></tr>
+        <tr><td>SimFlow.Event.Interact</td><td>Generic "used it"</td></tr>
+        <tr><td>SimFlow.Event.Grab</td><td>Picked something up</td></tr>
+        <tr><td>SimFlow.Event.Release</td><td>Let go</td></tr>
+        <tr><td>SimFlow.Event.ButtonPressed</td><td>Pressed a button</td></tr>
+      </table></div>
+      <p>Add your own in <strong>Project Settings &rarr; Project &rarr; GameplayTags</strong>, or natively (see the developer guide). <code>Send Flow Event</code> targets one flow by Save Id; <code>Broadcast Flow Event</code> hits every running flow, which is usually what you want.</p>
+    </section>
+
+    <section class="chunk" id="u-custom">
+      <h2>Your own tasks and conditions</h2>
+      <h3>A custom task</h3>
+      <ol class="body-list">
+        <li><strong>Blueprint Class &rarr; All Classes &rarr; SimFlowTask</strong></li>
+        <li>In Class Defaults, set Display Name and Instruction</li>
+        <li>Implement <strong>On Task Start</strong> &mdash; highlight the object, bind a delegate, spawn a marker</li>
+        <li>Call <strong>Finish Task</strong> with Succeeded or Failed when the player is done</li>
+        <li>Implement <strong>On Task End</strong> to clean up &mdash; it runs on skip, fail and abort too, so nothing leaks</li>
+      </ol>
+      <p>Also available: On Task Tick, On Task Pause, On Task Resume, On Task Retry, On Save Task State, On Load Task State.</p>
+      <p>Useful inside a task: <code>Get Blackboard</code>, <code>Get Flow Owner</code>, <code>Get Player Pawn</code>, <code>Set Saved Value</code> / <code>Get Saved Value</code> (survives save/load).</p>
+      <div class="call warn"><span class="lbl">Tasks cannot reference level actors</span>
+        <p>A task lives in the asset, not the level. Find what you need at runtime with <em>Get All Actors With Tag</em>, pass it through the blackboard, or invert the relationship and have the level actor listen to <code>On Task Finished</code>.</p>
+      </div>
+      <h3>A custom condition</h3>
+      <p>Blueprint Class &rarr; <strong>SimFlowCondition</strong>, implement <strong>Evaluate</strong>, return a bool. <code>Invert</code> is applied for you on top of what you return.</p>
+    </section>
+
+    <section class="chunk" id="u-blueprint">
+      <h2>Talking to Blueprint</h2>
+      <h4>World &rarr; flow</h4>
+      <div class="tbl"><table>
+        <thead><tr><th>From Blueprint</th><th>Use</th></tr></thead>
+        <tr><td>Any actor, no reference</td><td><code>Broadcast Flow Event</code></td></tr>
+        <tr><td>A specific flow</td><td><code>Find Flow By Id</code> / <code>Send Flow Event</code></td></tr>
+        <tr><td>The actor owns the flow</td><td><code>Get Flow From Actor</code></td></tr>
+        <tr><td>The one running flow</td><td><code>Get Primary Flow</code></td></tr>
+        <tr><td>Write state the graph reads</td><td><code>Get Blackboard</code> &rarr; <code>Set &hellip;</code></td></tr>
+        <tr><td>Player controls</td><td><code>Retry / Skip / Fail Current Task</code>, <code>Toggle Pause</code></td></tr>
+        <tr><td>Instructor / menu control from either side</td><td><code>Request Flow Control</code></td></tr>
+      </table></div>
+
+      <h4>Flow &rarr; world (component delegates)</h4>
+      <div class="tbl"><table>
+        <thead><tr><th>Delegate</th><th>Gives you</th></tr></thead>
+        <tr><td>On Flow Started / Paused / Resumed</td><td>&mdash;</td></tr>
+        <tr><td>On Flow Finished</td><td>Final run state</td></tr>
+        <tr><td>On Task Started</td><td>Node, Task</td></tr>
+        <tr><td>On Task Finished</td><td>Node, Task, Result</td></tr>
+        <tr><td>On Task Retried</td><td>Node, Task</td></tr>
+        <tr><td>On Checkpoint Reached</td><td>Checkpoint node</td></tr>
+        <tr><td>On Quiz Presented</td><td>The quiz task</td></tr>
+        <tr><td>On Net State Changed</td><td>(multiplayer) server state arrived</td></tr>
+      </table></div>
+
+      <h4>A door that opens when a named task succeeds</h4>
+      <pre><code>BeginPlay
+ &#x2514;&#x2500; Get Primary Flow &rarr; Bind Event to On Task Finished
+
+Custom Event (Node, Task, Result)
+ &#x2514;&#x2500; Branch: Task &rarr; Get Task Id == "OpenValve"
+     &#x2514;&#x2500; Branch: Result == Succeeded
+         &#x2514;&#x2500; Play door timeline</code></pre>
+    </section>
+
+    <section class="chunk" id="u-ui">
+      <h2>Tutorial UI</h2>
+      <p>Create a Widget Blueprint, then <strong>Graph &rarr; Class Settings &rarr; Parent Class</strong> &rarr; <strong>SimFlow Status Widget</strong>. With <code>Auto Bind</code> on (the default) it binds itself to the primary running flow &mdash; or set <code>Flow Save Id</code> to follow a specific one &mdash; with no wiring.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Category</th><th>Available</th></tr></thead>
+        <tr><td>Read</td><td>Get Task Name, Get Instruction, Get Progress, Get Score, Get Time Remaining Text, Get Current Quiz, Is Flow Paused, Can Retry, Can Skip</td></tr>
+        <tr><td>Call from buttons</td><td>Request Retry, Request Skip, Request Pause Toggle, Request Restart, Submit Quiz Answer</td></tr>
+        <tr><td>Design events</td><td>On Flow Bound, On Flow Started, On Flow Paused, On Flow Resumed, On Flow Finished, On Task Started, On Task Finished, On Quiz Presented, On Flow State Replicated</td></tr>
+      </table></div>
+      <p>For the quiz, bind <strong>On Quiz Presented</strong>, read <code>Question</code> and <code>Options</code> off the task, and call <strong>Submit Quiz Answer</strong> with the index the player picked. In multiplayer it forwards to the server for you.</p>
+      <p>For VR, put the widget in a Widget Component on the wrist or a wall panel. Build it screen-space first and move it once it works.</p>
+    </section>
+
+    <section class="chunk" id="u-save">
+      <h2>Save and load</h2>
+      <pre><code>Quick Save / Quick Load                    the component's default slot
+Save Flow To Slot / Load Flow From Slot    a named slot
+Has Save In Slot                           for a "Continue" button
+Save All Flows / Load All Flows            every flow in the game at once (statics)</code></pre>
+      <p>A save holds the blackboard, every node's state, elapsed time, raised events and the last checkpoint.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Mode</th><th>Behaviour</th></tr></thead>
+        <tr><td>Exact State</td><td>Every active node comes back active with its elapsed time and retry count. Tasks re-run <em>On Task Start</em>, so world setup is reapplied.</td></tr>
+        <tr><td>From Last Checkpoint</td><td>Restores the blackboard, then resumes from the last Checkpoint passed. More forgiving, usually better for an interrupted VR session.</td></tr>
+      </table></div>
+      <p>Several flows share one slot, keyed by the component's <strong>Flow Save Id</strong>. Turn on <strong>Auto Resume From Save On Begin Play</strong> to pick a save up automatically when one exists.</p>
+      <div class="call warn"><span class="lbl">Object references are not saved</span>
+        <p>Re-resolve them in <strong>On Load Task State</strong>, or look the actor up again by tag.</p>
+      </div>
+    </section>
+
+    <section class="chunk" id="u-mp">
+      <h2>Multiplayer</h2>
+      <p>Off by default. The server runs everything; clients mirror. Your existing Blueprint calls work unchanged &mdash; they detect they are on a client and forward to the server.</p>
+      <ol class="body-list">
+        <li>Put the component on a <strong>replicated</strong> actor &mdash; Game State for a shared scenario, Player State for one flow per trainee</li>
+        <li>Tick <strong>Replicate Flow</strong></li>
+        <li>Add a <strong>SimFlow Player Component</strong> to your PlayerController Blueprint</li>
+      </ol>
+      <div class="call note"><span class="lbl">Step 3 is the non-obvious one</span>
+        <p>A flow on the Game State has no owning connection, so a client cannot RPC it directly. The player component sits on the PlayerController &mdash; which always has one &mdash; and relays requests. Without it, clients can watch but not act, and you get a warning in the log.</p>
+      </div>
+      <p>Client-safe calls (they forward themselves): Start/Stop/Restart, Pause/Resume/Toggle Pause, Retry/Skip/Fail Current Task, Send Event, Submit Quiz Answer, Broadcast Flow Event, Request Flow Control.</p>
+      <p><strong>Save and load are server-only.</strong> On a client they log a warning and do nothing. <code>Get Current Task()</code> on a client returns the <em>authored template</em> task &mdash; its text is right, its runtime counters are not; read those from <code>Get Net State</code>.</p>
+    </section>
+
+    <section class="chunk" id="u-patterns">
+      <h2>Pattern cookbook</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Goal</th><th>Build</th></tr></thead>
+        <tr><td>Timeout on one task</td><td>Time Limit on the Task node; wire <code>TimedOut</code> to the remediation</td></tr>
+        <tr><td>Timeout on a section</td><td>Parallel into the section and a Delay, then Join on <em>Wait For Any</em></td></tr>
+        <tr><td>Quiz with remediation</td><td>Quiz, <code>Failed</code> into a hint task, hint's <code>Completed</code> back into the Quiz's <code>In</code>. Bound with Max Retries</td></tr>
+        <tr><td>Pass/fail on score</td><td>Branch with a Score Threshold condition; <code>Default</code> to a Finish node in Fail mode</td></tr>
+        <tr><td>Optional step</td><td>Branch on a blackboard flag your level sets; the false case skips past</td></tr>
+        <tr><td>Reusable procedure</td><td>Author as its own asset; drop a Sub Flow node into each scenario</td></tr>
+        <tr><td>Two things in either order</td><td>Parallel into both, Join on <em>Wait For All</em></td></tr>
+        <tr><td>Escalating hints</td><td>Loop with the hint task in the body, break condition on the real task being done</td></tr>
+      </table></div>
+    </section>
+
+    <section class="chunk" id="u-debug">
+      <h2>Debugging</h2>
+      <p><code>SimFlow.Debug 1</code> in the console shows flow name, run state, elapsed time, progress, every active node with its countdown and retry count, and the whole blackboard. Per-component, tick <strong>Show Debug HUD</strong>.</p>
+      <p>For VR, <code>Get Debug Text</code> returns the same text as a string &mdash; put it on a world-space widget so you can read it in the headset.</p>
+      <p><strong>Output Log</strong>, filtered to <code>LogSimFlow</code>, records every task start, finish, retry and refusal, plus warnings for misconfiguration.</p>
+      <p>The <strong>Validation</strong> panel in the graph editor refreshes on every edit and reports missing tasks, dead ends, unreachable nodes and dangling links.</p>
+    </section>
+
+    <section class="chunk" id="u-trouble">
+      <h2>Troubleshooting</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Symptom</th><th>Cause</th></tr></thead>
+        <tr><td>A Wait For Event task succeeds instantly</td><td><strong>Event Tag is unset.</strong> Check the Output Log for the warning</td></tr>
+        <tr><td>Nothing happens on Play</td><td>Start Mode is <em>Manual</em>, or Flow Asset is empty</td></tr>
+        <tr><td>The flow stalls on one task</td><td>Nothing completes it: no Time Limit, and the event never fires</td></tr>
+        <tr><td>A task ends immediately</td><td>Its Abort Condition is passing, or a Constant condition is set true</td></tr>
+        <tr><td>Wrong branch taken</td><td>Cases evaluate top to bottom, first match wins. A case with no condition never passes</td></tr>
+        <tr><td>Score is wrong</td><td>Check Score on Failure; a task that pays out for failing is easy to miss</td></tr>
+        <tr><td>The flow completes too early</td><td>A Task node's <code>Completed</code> pin is unwired, so it hit a dead end</td></tr>
+        <tr><td>Retry does nothing</td><td>Max Retries reached, or Allow Retry is off</td></tr>
+        <tr><td>Client sees nothing</td><td>Component is not on a replicated actor, or Replicate Flow is off</td></tr>
+        <tr><td>Client buttons do nothing</td><td>PlayerController is missing the SimFlow Player Component</td></tr>
+        <tr><td>Save does nothing on a client</td><td>Save and load are server-only by design</td></tr>
+      </table></div>
+    </section>
+  </div>
+
+  <!-- ============================================= DEVELOPER GUIDE -->
+  <div class="guide" id="guide-dev" role="tabpanel" aria-labelledby="tab-dev" hidden>
+
+    <section class="chunk" id="d-modules">
+      <h2>Module layout</h2>
+      <pre><code>SimFlow/
+  SimFlow.uplugin
+  Resources/Icon128.png
+  Source/
+    SimFlowRuntime/      Runtime, PreDefault  &mdash; ships in packaged builds
+    SimFlowEditor/       Editor               &mdash; stripped on cook
+  docs/</code></pre>
+      <p><strong>SimFlowRuntime</strong> public deps: Core, CoreUObject, Engine, GameplayTags, DeveloperSettings, UMG, SlateCore, NetCore. Private: Slate, InputCore, Projects (+ UnrealEd in editor builds).</p>
+      <p><strong>SimFlowEditor</strong> adds UnrealEd, EditorFramework, EditorSubsystem, ToolMenus, GraphEditor, KismetWidgets, PropertyEditor, AssetDefinition, AssetTools, ApplicationCore, WorkspaceMenuStructure.</p>
+      <div class="call note"><span class="lbl">GameplayTags is a module, not a plugin</span>
+        <p>It must not appear in the <code>.uplugin</code>'s <code>Plugins</code> array &mdash; Unreal will look for a <code>GameplayTags.uplugin</code> that does not exist and refuse to load. It belongs only in the <code>.Build.cs</code> dependency list.</p>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>File</th><th>Contents</th></tr></thead>
+        <tr><td>SimFlowTypes</td><td>Enums, <code>FSimFlowValue</code>, pin structs, <code>SimFlowPins</code> / <code>SimFlowKeys</code> namespaces</td></tr>
+        <tr><td>SimFlowNetTypes</td><td><code>FSimFlowNetState</code>, <code>FSimFlowNetTask</code>, <code>ESimFlowControlRequest</code></td></tr>
+        <tr><td>SimFlowAsset</td><td>The flow template, authoring API, <code>ValidateFlow</code></td></tr>
+        <tr><td>SimFlowNode / Nodes</td><td>Node base and all built-ins</td></tr>
+        <tr><td>SimFlowTask / Tasks</td><td>Task base and built-ins</td></tr>
+        <tr><td>SimFlowCondition / Conditions</td><td>Condition base and built-ins</td></tr>
+        <tr><td>SimFlowBlackboard</td><td>Key/value store</td></tr>
+        <tr><td>SimFlowInstance</td><td>The executor</td></tr>
+        <tr><td>SimFlowComponent</td><td>Designer-facing API, replication</td></tr>
+        <tr><td>SimFlowPlayerComponent</td><td>Client &rarr; server control channel</td></tr>
+        <tr><td>SimFlowSubsystem</td><td>Registry, global controls, debug HUD</td></tr>
+        <tr><td>SimFlowSaveGame</td><td><code>FSimFlowSaveState</code>, <code>USimFlowSaveGame</code></td></tr>
+        <tr><td>SimFlowStatics</td><td>Blueprint function library</td></tr>
+        <tr><td>SimFlowStatusWidget</td><td>UMG base class</td></tr>
+        <tr><td>SimFlowGameplayTags</td><td>Native tags (<code>SimFlowTags</code> namespace)</td></tr>
+      </table></div>
+    </section>
+
+    <section class="chunk" id="d-object">
+      <h2>Object model</h2>
+      <pre><code>USimFlowAsset                 the authored template
+  &#x2514;&#x2500; TArray&lt;USimFlowNode*&gt;    outered to the asset, survives cooking
+       &#x251C;&#x2500; USimFlowTask        Instanced sub-object on Task nodes
+       &#x2514;&#x2500; USimFlowCondition   Instanced sub-object where used
+
+USimFlowComponent             on an actor
+  &#x2514;&#x2500; USimFlowInstance         a running copy
+       &#x251C;&#x2500; duplicated nodes    DuplicateObject of every template node
+       &#x2514;&#x2500; USimFlowBlackboard</code></pre>
+      <p>The <strong>template/instance split</strong> is the central design decision. <code>USimFlowAsset</code> is never mutated at runtime; <code>BuildRuntimeNodes</code> duplicates every node so each run owns its timers, retry counts and loop counters. Two actors can run the same asset, and Sub Flow nests instances (with an optional parent-child blackboard copy both ways).</p>
+      <p>Node identity is <code>FGuid NodeGuid</code>, preserved across duplication. Links, save data and replication all address nodes by Guid rather than pointer.</p>
+    </section>
+
+    <section class="chunk" id="d-exec">
+      <h2>Execution model</h2>
+      <p>Execution is <strong>queue driven, not recursive</strong>. <code>TriggerNodeOutput</code> enqueues targets rather than calling into them; <code>ProcessPendingActivations</code> drains the queue under a re-entrancy guard.</p>
+      <pre><code>void USimFlowInstance::ProcessPendingActivations()
+{
+    if (bProcessingActivations) return;      // re-entrancy guard
+    bProcessingActivations = true;
+
+    while (PendingActivations.Num() &gt; 0 &amp;&amp; RunState == ESimFlowRunState::Running)
+    {
+        if (++Processed &gt; MaxActivationsPerProcess) { bOverflowed = true; break; }
+        const FPendingActivation Next = PendingActivations[0];
+        PendingActivations.RemoveAt(0, 1, EAllowShrinking::No);
+        if (USimFlowNode* Node = FindRuntimeNode(Next.NodeGuid))
+            ActivateNode(Node, Next.InputPin);
+    }
+
+    bProcessingActivations = false;
+    if (bOverflowed) { /* log, fail the flow */ }
+}</code></pre>
+      <ul>
+        <li>A chain of a thousand instant nodes costs one stack frame, not a thousand</li>
+        <li>A runaway loop is caught at <code>MaxActivationsPerProcess</code> = <strong>10,000</strong> activations per step and fails the flow with an error rather than hanging the editor</li>
+        <li>Ordering stays breadth-first within a step</li>
+      </ul>
+      <p><code>ActivateNode</code> refuses to re-enter an already-active node unless it overrides <code>AllowsReentrantActivation()</code>. Join and Loop do; nothing else does.</p>
+      <p><strong>Dead ends:</strong> if a node deactivates with no links and nothing else is active or queued, the instance completes the flow. That is what lets an unwired <code>Completed</code> pin end a simple flow cleanly.</p>
+    </section>
+
+    <section class="chunk" id="d-pins">
+      <h2>Pins and links</h2>
+      <pre><code>USTRUCT() struct FSimFlowPinLink   { FGuid NodeGuid; FName PinName; };
+USTRUCT() struct FSimFlowOutputPin { FName PinName; FString DisplayName;
+                                     TArray&lt;FSimFlowPinLink&gt; Links; };
+USTRUCT() struct FSimFlowInputPin  { FName PinName; FString DisplayName; };</code></pre>
+      <p>Nodes store their own pins and outgoing links. The editor graph is a <em>view</em> &mdash; on every change, <code>USimFlowGraph::CompileToAsset</code> clears all links and rebuilds them from the visual connections. The runtime never reads the <code>UEdGraph</code>.</p>
+      <p>Well-known names live in <code>namespace SimFlowPins</code>: <code>In</code>, <code>Out</code>, <code>Completed</code>, <code>Failed</code>, <code>Skipped</code>, <code>TimedOut</code>, <code>Default</code>, <code>LoopBody</code>. Use them rather than string literals. (Loop's <code>Continue</code> pin is <code>USimFlowNode_Loop::ContinuePin</code>.)</p>
+      <h4>Rebuilding pins</h4>
+      <p><code>RebuildPins()</code> is non-virtual and follows a template method pattern: stash existing links, clear the arrays, call the virtual <code>BuildPins()</code>, restore links onto any pin whose name still exists. Override <code>BuildPins()</code>, never <code>RebuildPins()</code>.</p>
+      <pre><code>void USimFlowNode_Task::BuildPins()
+{
+    AddInputPin(SimFlowPins::In);
+    AddOutputPin(SimFlowPins::Completed);
+    AddOutputPin(SimFlowPins::Failed);
+    AddOutputPin(SimFlowPins::Skipped);
+    AddOutputPin(SimFlowPins::TimedOut);
+}</code></pre>
+      <p>Because links are preserved by <em>name</em>, changing a Branch's case count keeps the wires on cases that still exist.</p>
+    </section>
+
+    <section class="chunk" id="d-nodelife">
+      <h2>Node lifecycle</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Override</th><th>When</th></tr></thead>
+        <tr><td>BuildPins()</td><td>Declaring pins</td></tr>
+        <tr><td>ExecuteInput(FName)</td><td>Execution arrives. The main entry point</td></tr>
+        <tr><td>TickNode(float)</td><td>Every frame while active. Call Super to accumulate ActiveTime</td></tr>
+        <tr><td>OnPauseNode / OnResumeNode</td><td>Flow paused / resumed</td></tr>
+        <tr><td>Cleanup()</td><td>Node stops being active, for any reason</td></tr>
+        <tr><td>AllowsReentrantActivation()</td><td>Return true to accept execution while already active</td></tr>
+        <tr><td>CanRetry / CanSkip / RequestRetry / RequestSkip / RequestFail</td><td>External player controls (default: no-ops except on Task nodes)</td></tr>
+        <tr><td>SaveNodeState / LoadNodeState</td><td>Persistence</td></tr>
+        <tr><td>GetNodeTitle / Subtitle / Tooltip / Color / Category</td><td>Editor presentation</td></tr>
+        <tr><td>IsEntryNode / IsPlaceableInGraph</td><td>Menu &amp; entry-point eligibility</td></tr>
+        <tr><td>GetDebugStatus()</td><td>The line shown in the debug HUD</td></tr>
+      </table></div>
+      <pre><code>TriggerOutput(SimFlowPins::Completed);                       // leaves and deactivates
+TriggerOutput(SimFlowPins::LoopBody, /*bStayActive*/ true);  // stays active
+FinishNode();                                                // deactivate, go nowhere</code></pre>
+      <p><code>bStayActive</code> matters for nodes that must survive their own output &mdash; Loop keeps running while the body executes, and a <em>Wait For Any</em> Join stays alive to absorb the losing branch.</p>
+      <div class="call note"><span class="lbl">Menu labels come from the CDO</span>
+        <p><code>GetNodeCategory()</code> places the node in the right-click menu, and the label is the <strong>class default object's</strong> <code>GetNodeTitle()</code>. That is why the Finish node lists as "Complete Flow".</p>
+      </div>
+    </section>
+
+    <section class="chunk" id="d-tasklife">
+      <h2>Task lifecycle</h2>
+      <p><code>USimFlowNode_Task</code> owns a <code>USimFlowTask</code> as an Instanced sub-object and drives it. C++ overrides are <code>NativeTaskStart/Tick/Pause/Resume/End</code>; Blueprint gets <code>ReceiveTaskStart</code> and friends. Both fire &mdash; native first.</p>
+      <pre><code>ExecuteInput      &rarr; InitializeTask &rarr; StartTask &rarr; NativeTaskStart, ReceiveTaskStart
+TickNode          &rarr; TickTask &rarr; NativeTaskTick, ReceiveTaskTick
+                  &rarr; abort condition checked
+                  &rarr; time limit checked
+FinishTask(Result)&rarr; score applied &rarr; NativeTaskEnd, ReceiveTaskEnd
+                  &rarr; OnTaskFinished broadcast
+                  &rarr; OwningNode-&gt;HandleTaskFinished(Result)</code></pre>
+      <p><code>HandleTaskFinished</code> applies auto-retry if configured, then maps the result to a pin. With <code>bFallbackToCompleted</code>, an unwired Failed/Skipped/TimedOut pin falls through to Completed.</p>
+      <p><code>FinishTask</code> is guarded by <code>bFinishRequested</code>, so calling it twice in one activation is harmless. Runtime read-only fields on the task: <code>bIsRunning</code>, <code>bIsPaused</code>, <code>ElapsedTime</code>, <code>RetryCount</code>, <code>FlowInstance</code>, <code>OwningNode</code>.</p>
+    </section>
+
+    <section class="chunk" id="d-customnode">
+      <h2>Writing a custom node</h2>
+      <pre><code>UCLASS(DisplayName = "Wait For Actor Tag")
+class MYGAME_API USimFlowNode_WaitForActorTag : public USimFlowNode
+{
+    GENERATED_BODY()
+public:
+    USimFlowNode_WaitForActorTag() { RebuildPins(); }
+
+    UPROPERTY(EditAnywhere, Category = "Wait")
+    FName ActorTag;
+
+    virtual void BuildPins() override
+    {
+        AddInputPin(SimFlowPins::In);
+        AddOutputPin(SimFlowPins::Out);
+    }
+
+    virtual void ExecuteInput(FName PinName) override
+    {
+        ActiveTime = 0.f;   // stay active; TickNode does the work
+    }
+
+    virtual void TickNode(float DeltaTime) override
+    {
+        Super::TickNode(DeltaTime);
+        if (/* found */) TriggerOutput(SimFlowPins::Out);
+    }
+
+    virtual FText GetNodeCategory() const override
+    {
+        return NSLOCTEXT("MyGame", "Cat", "My Game");
+    }
+};</code></pre>
+      <p>Call <code>RebuildPins()</code> in the constructor &mdash; the virtual dispatches correctly there because the derived constructor body is running.</p>
+      <p>The node appears in the graph menu automatically: the schema iterates every non-abstract <code>USimFlowNode</code> subclass whose CDO returns true from <code>IsPlaceableInGraph()</code>.</p>
+      <div class="call warn"><span class="lbl">C++ only</span>
+        <p>Custom <em>nodes</em> require C++. Custom tasks and conditions do not.</p>
+      </div>
+    </section>
+
+    <section class="chunk" id="d-customtask">
+      <h2>Custom tasks and conditions</h2>
+      <pre><code>UCLASS(DisplayName = "Hold Trigger")
+class MYGAME_API USimFlowTask_HoldTrigger : public USimFlowTask
+{
+    GENERATED_BODY()
+public:
+    UPROPERTY(EditAnywhere, Category = "Hold")
+    float RequiredSeconds = 2.f;
+
+    virtual void NativeTaskStart() override { Held = 0.f; }
+
+    virtual void NativeTaskTick(float DeltaTime) override
+    {
+        Held = IsTriggerHeld() ? Held + DeltaTime : 0.f;
+        if (Held &gt;= RequiredSeconds) FinishTask(ESimFlowResult::Succeeded);
+    }
+
+    virtual void NativeTaskEnd(ESimFlowResult Result) override { /* unbind */ }
+
+private:
+    float Held = 0.f;
+};</code></pre>
+      <p>Conditions override <code>NativeEvaluate(USimFlowInstance*) const</code>. <code>Evaluate</code> is non-const, applies <code>bInvert</code>, and lets a Blueprint <code>ReceiveEvaluate</code> override the native result. Override <code>GetConditionDescription_Implementation()</code> for the label shown on graph nodes and in the HUD.</p>
+      <p>Both <code>USimFlowTask</code> and <code>USimFlowCondition</code> are <code>Abstract, Blueprintable, EditInlineNew, DefaultToInstanced, CollapseCategories</code>, so they appear as inline configurable objects in the Details panel.</p>
+    </section>
+
+    <section class="chunk" id="d-value">
+      <h2>Blackboard and FSimFlowValue</h2>
+      <p><code>FSimFlowValue</code> is a tagged union over Bool / Int / Float / String / Name / Vector / Object, kept as a plain USTRUCT so it survives SaveGame serialisation and replicates without a custom NetSerialize.</p>
+      <pre><code>FSimFlowValue::MakeFloat(12.5f);
+Value.AsNumber();   // best-effort numeric (bool -&gt; 0/1, string -&gt; Atof)
+Value.AsBool();
+Value.AsString();
+Value.Compare(ESimFlowCompareOp::GreaterOrEqual, Other);
+Value.Add(Other);                // numbers, strings, vectors
+Value.StripObjectReferences();   // before saving</code></pre>
+      <p><code>USimFlowBlackboard::ToEntries(bStrip)</code> flattens the map to <code>TArray&lt;FSimFlowBlackboardEntry&gt;</code> for saving and replication, dropping object values. <code>FromEntries</code> restores; <code>MergeFrom</code> is what Sub Flow uses to copy a blackboard in and out.</p>
+      <p>Typed accessors (<code>GetFloat</code>, <code>SetVector</code>, &hellip;) and score helpers (<code>AddScore</code>, <code>GetScore</code>) are all Blueprint-exposed. <code>OnValueChanged(Key, NewValue)</code> fires on every write &mdash; the component listens to it to mark the replicated blackboard dirty.</p>
+      <p>Object references are deliberately not persisted &mdash; a raw pointer has no meaning across a save or a network boundary.</p>
+    </section>
+
+    <section class="chunk" id="d-save">
+      <h2>Save and load internals</h2>
+      <pre><code>USTRUCT() struct FSimFlowSaveState
+{
+    FString                          FlowAssetPath;
+    FName                            FlowSaveId;
+    ESimFlowRunState                 RunState;
+    FName                            EntryName;
+    float                            ElapsedTime;
+    TArray&lt;FSimFlowNodeSaveState&gt;    NodeStates;
+    TArray&lt;FSimFlowBlackboardEntry&gt;  Blackboard;
+    FGuid                            LastCheckpointGuid;
+    TArray&lt;FName&gt;                    RaisedEvents;
+    FDateTime                        SavedAt;
+    FString                          Label;
+};</code></pre>
+      <p><code>USimFlowSaveGame</code> holds <code>TMap&lt;FName, FSimFlowSaveState&gt;</code> keyed by Flow Save Id, plus a free-form <code>ExtraData</code> array and a <code>SaveVersion</code>, so several flows share one slot.</p>
+      <p><strong>Exact State</strong> restores by activating each node that was active, <em>then</em> calling <code>LoadNodeState</code> &mdash; activate first so the task runs its start logic and reapplies world setup, then overwrite the counters. <strong>From Last Checkpoint</strong> restores the blackboard and re-enters the checkpoint node.</p>
+      <p>Nodes participate via <code>SaveNodeState</code> / <code>LoadNodeState</code> (see <code>FSimFlowNodeSaveState</code>: <code>bActive</code>, <code>ActiveTime</code>, <code>ActiveInputPin</code>, <code>IntState</code>, <code>ReceivedInputs</code>, <code>CustomData</code>). Tasks get <code>ReceiveSaveTaskState</code> / <code>ReceiveLoadTaskState</code> with a <code>SetSavedValue</code> / <code>GetSavedValue</code> bag stored in <code>FSimFlowNodeSaveState::CustomData</code>.</p>
+    </section>
+
+    <section class="chunk" id="d-net">
+      <h2>Replication</h2>
+      <p>Off unless <code>bReplicateFlow</code>. Server-authoritative with client mirroring.</p>
+      <pre><code>UPROPERTY(ReplicatedUsing = OnRep_NetState)
+FSimFlowNetState NetState;
+
+UPROPERTY(ReplicatedUsing = OnRep_Blackboard)
+TArray&lt;FSimFlowBlackboardEntry&gt; ReplicatedBlackboard;   // gated by bReplicateBlackboard</code></pre>
+      <p><code>FSimFlowNetState</code> carries run state, active node Guids, an <code>FSimFlowNetTask</code> per active task (Guid, start server time, time limit, retry count), progress, elapsed time and <code>bHasEverStarted</code>. <strong>Nodes, tasks and conditions never replicate.</strong> Clients already have the flow asset, so they resolve a Guid back to the authored node and read display names, instructions and quiz content locally. Bandwidth is flat with respect to graph size.</p>
+      <p><code>UpdateNetState</code> compares with <code>EqualsIgnoringTime</code> so elapsed time alone does not dirty the state every frame; a periodic refresh (<code>NetRefreshInterval</code>) keeps it from going stale.</p>
+      <h4>Authority gating</h4>
+      <pre><code>bool HasFlowAuthority() const
+{
+    if (!bReplicateFlow) return true;              // single player: everyone
+    const AActor* Owner = GetOwner();
+    return !Owner || Owner-&gt;HasAuthority();
+}</code></pre>
+      <p><code>TickComponent</code> early-outs on a mirror. Control functions check <code>IsClientMirror()</code> and forward to the server through the local <code>USimFlowPlayerComponent</code>.</p>
+      <p><strong>Presentation events</strong> go out as <code>NetMulticast, Reliable</code> RPCs carrying a node Guid. <code>ShouldMulticastEvents()</code> decides between multicasting and firing locally, so standalone and dedicated-server paths both fire each delegate exactly once.</p>
+      <p><strong>Client &rarr; server control.</strong> A flow on the Game State has no owning connection, so <code>USimFlowPlayerComponent</code> lives on the PlayerController and relays requests (<code>ServerRequestControl</code> / <code>ServerRequestQuizAnswer</code> / <code>ServerRequestEvent</code>), resolving the target by Flow Save Id. Every request passes <code>IsRequestAuthorised(TargetFlow, Request)</code> server-side &mdash; a <code>BlueprintNativeEvent</code> you override for instructor-only controls. <code>bRestrictToOwnedFlows</code> is the built-in default gate.</p>
+    </section>
+
+    <section class="chunk" id="d-editor">
+      <h2>The editor module</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Class</th><th>Role</th></tr></thead>
+        <tr><td>USimFlowGraph</td><td>UEdGraph; owns CompileToAsset and RebuildFromAsset</td></tr>
+        <tr><td>USimFlowGraphNode</td><td>UEdGraphNode wrapping a runtime node</td></tr>
+        <tr><td>USimFlowGraphSchema</td><td>Menus, connection rules, default nodes</td></tr>
+        <tr><td>FSimFlowAssetEditor</td><td>The toolkit: graph, details and validation tabs</td></tr>
+        <tr><td>USimFlowAssetFactory</td><td>Content Browser creation</td></tr>
+        <tr><td>UAssetDefinition_SimFlowAsset</td><td>Asset type registration</td></tr>
+        <tr><td>FSimFlowSampleBuilder</td><td>Procedural sample generator (Tools menu / <code>SimFlow.CreateSample</code>)</td></tr>
+      </table></div>
+      <p><strong>The graph is a view.</strong> Runtime nodes are outered to the <em>asset</em> so they survive cooking, when the UEdGraph is stripped. <code>USimFlowGraphNode::RuntimeNode</code> is marked <code>Instanced</code> so copy/paste duplicates it; <code>PrepareForCopying</code> temporarily re-parents it onto the graph node for export and <code>PostCopyNode</code> puts it back. <code>PostPasteNode</code> re-outers to the asset, assigns a fresh Guid and clears the pasted links.</p>
+      <p><code>CompileToAsset</code> runs on every graph change, on save, and on details-panel edits, rewriting positions, comments and all pin links from the visual state.</p>
+      <p>Node property changes call <code>RebuildPins()</code> and broadcast <code>OnPinsChanged</code>, which the graph node listens to and re-syncs its Slate pins from, preserving connections by name.</p>
+    </section>
+
+    <section class="chunk" id="d-api">
+      <h2>API reference</h2>
+
+      <h3>USimFlowComponent</h3>
+      <h4>Authoring properties</h4>
+      <div class="tbl"><table>
+        <thead><tr><th>Property</th><th>Type</th><th>Default</th></tr></thead>
+        <tr><td>FlowAsset</td><td>USimFlowAsset*</td><td class="num">null</td></tr>
+        <tr><td>EntryName</td><td>FName</td><td class="num">Default</td></tr>
+        <tr><td>StartMode</td><td>ESimFlowStartMode</td><td class="num">Manual</td></tr>
+        <tr><td>AutoStartDelay</td><td>float</td><td class="num">1.0</td></tr>
+        <tr><td>bReplicateFlow</td><td>bool</td><td class="num">false</td></tr>
+        <tr><td>NetRefreshInterval</td><td>float</td><td class="num">1.0</td></tr>
+        <tr><td>bReplicateBlackboard</td><td>bool</td><td class="num">true</td></tr>
+        <tr><td>FlowSaveId</td><td>FName</td><td class="num">None</td></tr>
+        <tr><td>DefaultSaveSlotName</td><td>FString</td><td class="num">SimFlowSave</td></tr>
+        <tr><td>DefaultSaveUserIndex</td><td>int32</td><td class="num">0</td></tr>
+        <tr><td>bAutoResumeFromSaveOnBeginPlay</td><td>bool</td><td class="num">false</td></tr>
+        <tr><td>DefaultLoadMode</td><td>ESimFlowLoadMode</td><td class="num">ExactState</td></tr>
+        <tr><td>bShowDebugHUD</td><td>bool</td><td class="num">false</td></tr>
+        <tr><td>bFollowGamePause</td><td>bool</td><td class="num">true</td></tr>
+      </table></div>
+      <h4>Controls (safe from either side)</h4>
+      <pre><code>bool  StartFlow()
+bool  StartFlowFromEntry(FName InEntryName)
+void  StopFlow()
+bool  RestartFlow()
+void  PauseFlow() / ResumeFlow() / TogglePause()
+bool  RetryCurrentTask() / SkipCurrentTask() / FailCurrentTask()
+void  SendEvent(FGameplayTag EventTag, UObject* Payload = nullptr)
+void  SubmitQuizAnswer(int32 OptionIndex)</code></pre>
+      <h4>Save / load (authority only)</h4>
+      <pre><code>FSimFlowSaveState SaveFlowState() const
+bool  LoadFlowState(const FSimFlowSaveState&amp; State, ESimFlowLoadMode = ExactState)
+bool  SaveFlowToSlot(const FString&amp; SlotName, int32 UserIndex = 0)
+bool  LoadFlowFromSlot(const FString&amp; SlotName, int32 UserIndex = 0, ESimFlowLoadMode = ExactState)
+bool  QuickSave() / QuickLoad()
+bool  HasSaveInSlot(const FString&amp; SlotName, int32 UserIndex = 0) const</code></pre>
+      <h4>Queries (client-safe)</h4>
+      <pre><code>USimFlowInstance*  GetFlowInstance() const
+USimFlowBlackboard* GetBlackboard() const
+ESimFlowRunState   GetRunState() const
+bool  IsFlowRunning() / IsFlowPaused() const
+USimFlowTask* GetCurrentTask() const           // template task on a client
+FText GetCurrentTaskName() / GetCurrentInstruction() const
+float GetProgress() / GetScore() const
+float GetCurrentTaskRemainingTime() const      // -1 when no limit
+USimFlowTask_Quiz* GetCurrentQuiz() const
+bool  IsClientMirror() / HasFlowAuthority() const
+FSimFlowNetState GetNetState() const
+FString GetDebugText() const
+FName GetEffectiveSaveId() const</code></pre>
+      <h4>Delegates</h4>
+      <p><code>OnFlowStarted</code>, <code>OnFlowPaused</code>, <code>OnFlowResumed</code>, <code>OnFlowFinished(FinalState)</code>, <code>OnTaskStarted(Node, Task)</code>, <code>OnTaskFinished(Node, Task, Result)</code>, <code>OnTaskRetried(Node, Task)</code>, <code>OnCheckpointReached(Checkpoint)</code>, <code>OnQuizPresented(Quiz)</code>, <code>OnNetStateChanged</code>.</p>
+
+      <h3>USimFlowStatics (Blueprint function library)</h3>
+      <pre><code>USimFlowComponent* GetPrimaryFlow(WorldContext)
+USimFlowComponent* FindFlowById(WorldContext, FName FlowSaveId)
+USimFlowComponent* GetFlowFromActor(AActor* Actor)
+void  BroadcastFlowEvent(WorldContext, FGameplayTag EventTag, UObject* Payload = nullptr)
+void  SendFlowEvent(WorldContext, FName FlowSaveId, FGameplayTag EventTag, UObject* Payload = nullptr)
+void  RequestFlowControl(WorldContext, FName FlowSaveId, ESimFlowControlRequest Request)
+void  PauseAllFlows(WorldContext) / ResumeAllFlows(WorldContext)
+bool  SaveAllFlows(WorldContext, const FString&amp; SlotName, int32 UserIndex = 0)
+int32 LoadAllFlows(WorldContext, const FString&amp; SlotName, int32 UserIndex = 0, ESimFlowLoadMode = ExactState)
+bool  DeleteFlowSave(const FString&amp; SlotName, int32 UserIndex = 0)
+FSimFlowValue MakeFlowBool/Int/Float/String/Name/Vector/Object(...)
+bool/int32/float/FString FlowValueToBool/Int/Float/String(const FSimFlowValue&amp;)
+FText ResultToText(ESimFlowResult) / RunStateToText(ESimFlowRunState) / FormatSeconds(float)</code></pre>
+
+      <h3>USimFlowSubsystem (GameInstance subsystem)</h3>
+      <pre><code>static USimFlowSubsystem* Get(WorldContext)
+TArray&lt;USimFlowComponent*&gt; GetAllFlowComponents() const
+USimFlowComponent* FindFlowById(FName) / GetPrimaryFlow() const
+void  PauseAllFlows() / ResumeAllFlows() / StopAllFlows()
+bool  SaveAllFlowsToSlot(const FString&amp; SlotName, int32 UserIndex = 0)
+int32 LoadAllFlowsFromSlot(const FString&amp; SlotName, int32 UserIndex = 0, ESimFlowLoadMode = ExactState)
+static bool DeleteSaveSlot(const FString&amp; SlotName, int32 UserIndex = 0)
+void  SetDebugHUDEnabled(bool) / bool IsDebugHUDEnabled() const
+FString BuildGlobalDebugText() const</code></pre>
+
+      <h3>USimFlowPlayerComponent (on the PlayerController)</h3>
+      <pre><code>UPROPERTY bRestrictToOwnedFlows = false
+static USimFlowPlayerComponent* GetLocal(WorldContext)
+void  RequestControl(FName FlowSaveId, ESimFlowControlRequest Request)
+void  RequestQuizAnswer(FName FlowSaveId, FGuid QuizNodeGuid, int32 OptionIndex)
+void  RequestEvent(FName FlowSaveId, FGameplayTag EventTag, UObject* Payload = nullptr)
+virtual bool IsRequestAuthorised_Implementation(USimFlowComponent* TargetFlow, ESimFlowControlRequest) const</code></pre>
+
+      <h3>USimFlowAsset authoring API</h3>
+      <pre><code>USimFlowNode* AddNode(TSubclassOf&lt;USimFlowNode&gt; NodeClass)
+void  RemoveNode(USimFlowNode* Node)
+bool  ConnectNodes(USimFlowNode* From, FName FromPin, USimFlowNode* To, FName ToPin)
+bool  DisconnectNodes(USimFlowNode* From, FName FromPin, USimFlowNode* To, FName ToPin)
+void  ValidateFlow(TArray&lt;FString&gt;&amp; OutErrors, TArray&lt;FString&gt;&amp; OutWarnings) const
+USimFlowNode* FindNodeByGuid(const FGuid&amp;) const
+TArray&lt;FName&gt; GetEntryNames() const
+FText GetDisplayNameText() const</code></pre>
+      <p>All Blueprint-callable and safe to run at runtime, so procedural flows can be built entirely in code &mdash; <code>SimFlowSampleBuilder.cpp</code> is a complete worked example.</p>
+
+      <h3>Enums</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Enum</th><th>Values</th></tr></thead>
+        <tr><td>ESimFlowStartMode</td><td>Manual, AutoOnBeginPlay, AutoOnFirstTick, AutoAfterDelay</td></tr>
+        <tr><td>ESimFlowRunState</td><td>NotStarted, Running, Paused, Completed, Failed, Aborted</td></tr>
+        <tr><td>ESimFlowResult</td><td>Succeeded, Failed, Skipped, TimedOut, Aborted</td></tr>
+        <tr><td>ESimFlowFinishMode</td><td>Complete, Fail, Abort</td></tr>
+        <tr><td>ESimFlowValueType</td><td>None, Bool, Int, Float, String, Name, Vector, Object</td></tr>
+        <tr><td>ESimFlowCompareOp</td><td>Equal, NotEqual, Less, LessOrEqual, Greater, GreaterOrEqual</td></tr>
+        <tr><td>ESimFlowJoinMode</td><td>WaitForAll, WaitForAny</td></tr>
+        <tr><td>ESimFlowLoadMode</td><td>ExactState, FromLastCheckpoint</td></tr>
+        <tr><td>ESimFlowControlRequest</td><td>Start, Stop, Restart, Pause, Resume, TogglePause, Retry, Skip, Fail</td></tr>
+      </table></div>
+
+      <h3>Native gameplay tags (<code>SimFlowTags</code>)</h3>
+      <pre><code>Event, Event_Generic, Event_Interact, Event_Grab, Event_Release, Event_ButtonPressed
+Sample_GrabExtinguisher, Sample_PullPin        // used by the sample flow only</code></pre>
+      <p>Declare your project's own with <code>UE_DECLARE_GAMEPLAY_TAG_EXTERN</code> / <code>UE_DEFINE_GAMEPLAY_TAG</code>, or in the Gameplay Tags project settings, and raise them with <code>BroadcastFlowEvent</code>.</p>
+    </section>
+
+    <section class="chunk" id="d-compat">
+      <h2>Engine compatibility</h2>
+      <p>Targets 5.6, and builds on 5.4/5.5. One line needs to match the engine. <code>FEdGraphSchemaAction::PerformAction</code>'s location parameter has moved between <code>FVector2D</code> and the FVector2f-backed <code>UE::Slate::FDeprecateVector2DParameter</code>, and it cannot be inferred from the version number. <code>SimFlowEditorCompat.h</code> deduces the type from the base class declaration rather than hardcoding it.</p>
+      <pre><code>// SimFlowEditorCompat.h
+#define SIMFLOW_PERFORMACTION_LOCATION_MODE 0
+//  0  const FVector2D                                 (verified on UE 5.6)
+//  1  const UE::Slate::FDeprecateVector2DParameter&amp;
+//  2  const UE::Slate::FDeprecateVector2DParameter</code></pre>
+      <p>A wrong setting fails loudly: <em>"method with override specifier 'override' did not override any base class methods"</em>. Check <code>Engine/Source/Runtime/Engine/Classes/EdGraph/EdGraphSchema.h</code>, find the <code>PerformAction</code> overload taking a single <code>UEdGraphPin* FromPin</code>, and match its third parameter.</p>
+    </section>
+
+    <section class="chunk" id="d-logging">
+      <h2>Logging and diagnostics</h2>
+      <p><code>LogSimFlow</code> (runtime) and <code>LogSimFlowEditor</code> (editor). Module startup logs at <code>Display</code> so it shows without changing verbosity.</p>
+      <pre><code>SimFlow.Debug 1        on-screen overlay for every running flow
+SimFlow.Debug 0        off
+SimFlow.CreateSample   build the sample flow asset (editor)</code></pre>
+      <p><code>USimFlowAsset::ValidateFlow(OutErrors, OutWarnings)</code> is public and Blueprint-callable &mdash; reachable from commandlets and automation, not just the editor panel. It reports missing Start nodes, dangling links, task nodes with no task, unreachable nodes and nodes with no outgoing connections.</p>
+    </section>
+
+    <section class="chunk" id="d-limits">
+      <h2>Known limitations</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Limitation</th><th>Detail</th></tr></thead>
+        <tr><td>Join <em>Wait For Any</em> leaves the loser running</td><td>The node stays alive to swallow the late arrival so downstream cannot fire twice, but the losing branch's task continues until the flow ends</td></tr>
+        <tr><td>Blackboard replication resends the whole array</td><td>Fine for tens of keys at tutorial pacing; move to a FastArraySerializer beyond that</td></tr>
+        <tr><td>Presentation multicasts are reliable</td><td>Appropriate for a flow that changes task every few seconds, not for high-frequency events</td></tr>
+        <tr><td>Object values are neither saved nor replicated</td><td>By design; resolve actors at runtime</td></tr>
+        <tr><td>Custom nodes require C++</td><td>Tasks and conditions do not</td></tr>
+        <tr><td>Tasks cannot reference level actors</td><td>They live in the asset. Resolve by tag, pass through the blackboard, or invert to a delegate listener</td></tr>
+        <tr><td>A task with no time limit and no other exit hangs silently</td><td>No error, no log line. <code>ValidateFlow</code> does not catch it &mdash; it is a runtime condition, not a graph-structure one</td></tr>
+        <tr><td>An unconfigured Wait For Event succeeds immediately</td><td>It logs a warning, but a silent success is arguably the wrong default</td></tr>
+      </table></div>
+    </section>
+
+    <section class="chunk" id="d-versions">
+      <h2>Versions</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Version</th><th>Notes</th></tr></thead>
+        <tr><td>1.1.4</td><td>Fewer decisions to set up a placement check: a zone shows <em>Settle Mode</em> (<code>Instant</code> / <code>Standard</code> / <code>Custom</code>) in place of five settling and filtering fields, and <em>Place Object In Zone</em> leads with the four a drill actually needs. <code>Standard</code> is the old defaults exactly, nothing was renamed or removed, and a zone saved with tuned numbers loads as <code>Custom</code>. Fixed: a rejected item was graded a near miss whatever it was. <code>.uplugin</code> Version 7.</td></tr>
+        <tr><td>1.1.3</td><td>Items report their own held state (<code>Set Held</code> / <code>Is Held</code>) so a zone no longer infers release from attachment &mdash; which was wrong for constraint-based grab systems including VRExpansion's default grip. A payload that is neither an Actor nor an Actor Component now logs a warning instead of failing silently. <code>.uplugin</code> Version 6.</td></tr>
+        <tr><td>1.1.2</td><td>Object recognition: <code>USimFlowIdentityComponent</code>, <code>FSimFlowActorQuery</code> and match grading; <code>ASimFlowZone</code>; the <em>Place Object In Zone</em> and <em>Ordered Sequence</em> tasks; a first-class mistake record. <em>Wait For Event</em> stopped discarding the event payload. <code>.uplugin</code> Version 5.</td></tr>
+        <tr><td>1.1.0</td><td>Adds optional server-authoritative multiplayer replication (<code>bReplicateFlow</code>, <code>USimFlowPlayerComponent</code>, <code>FSimFlowNetState</code>). <code>.uplugin</code> FileVersion 3 / Version 4, EngineVersion 5.6.0.</td></tr>
+        <tr><td>1.0.x</td><td>Single-player: node graph authoring, sequential &amp; parallel tasks, conditions, branching, pause/resume, retry/skip/fail, save/load, sub-flows.</td></tr>
+      </table></div>
+    </section>
+  </div>
+
+  </main>
+</div>
+
+<footer>
+  SimFlow v1.1.4 &middot; Unreal Engine 5.6 &middot; generated documentation. See <code>Plugins/SimFlow/README.md</code> and <code>Plugins/SimFlow/docs/Cheatsheet.md</code> for the source Markdown.
+</footer>
+
+<script>
+(function () {
+  var tabs   = { user: document.getElementById('tab-user'), dev: document.getElementById('tab-dev') };
+  var panes  = { user: document.getElementById('guide-user'), dev: document.getElementById('guide-dev') };
+  var tocEl  = document.getElementById('toc');
+  var observer = null;
+
+  function buildToc(key) {
+    tocEl.innerHTML = '';
+    var sections = panes[key].querySelectorAll('section.chunk');
+    Array.prototype.forEach.call(sections, function (sec) {
+      var h = sec.querySelector('h2');
+      if (!h) return;
+      var li = document.createElement('li');
+      var a  = document.createElement('a');
+      a.href = '#' + sec.id;
+      a.textContent = h.textContent.trim();
+      a.dataset.target = sec.id;
+      li.appendChild(a);
+      tocEl.appendChild(li);
+    });
+    spy(key);
+  }
+
+  function spy(key) {
+    if (observer) observer.disconnect();
+    var links = {};
+    Array.prototype.forEach.call(tocEl.querySelectorAll('a'), function (a) { links[a.dataset.target] = a; });
+    observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        Array.prototype.forEach.call(tocEl.querySelectorAll('a'), function (a) { a.classList.remove('active'); });
+        if (links[e.target.id]) links[e.target.id].classList.add('active');
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    Array.prototype.forEach.call(panes[key].querySelectorAll('section.chunk'), function (s) { observer.observe(s); });
+  }
+
+  function select(key) {
+    Object.keys(panes).forEach(function (k) {
+      panes[k].hidden = (k !== key);
+      tabs[k].setAttribute('aria-selected', k === key ? 'true' : 'false');
+    });
+    buildToc(key);
+    try { history.replaceState(null, '', '#' + (key === 'dev' ? 'dev' : 'user')); } catch (e) {}
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  tabs.user.addEventListener('click', function () { select('user'); });
+  tabs.dev.addEventListener('click',  function () { select('dev');  });
+
+  // theme toggle
+  var root = document.documentElement;
+  var toggle = document.getElementById('themeToggle');
+  try {
+    var saved = localStorage.getItem('simflow-theme');
+    if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+  } catch (e) {}
+  toggle.addEventListener('click', function () {
+    var isDark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('simflow-theme', next); } catch (e) {}
+  });
+
+  // deep-link to a guide
+  var startKey = (location.hash === '#dev') ? 'dev' : 'user';
+  select(startKey);
+})();
+</script>
+
+</body>
+</html>

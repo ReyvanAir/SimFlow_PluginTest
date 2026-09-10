@@ -1,0 +1,30 @@
+{
+	"FileVersion": 3,
+	"Version": 7,
+	"VersionName": "1.1.4",
+	"FriendlyName": "SimFlow",
+	"Description": "Modular, data-driven task / flow framework for VR simulations, tutorials and gameplay sequences. Node graph authoring, sequential & parallel tasks, conditions, branching, pause/resume, retry/skip/fail and save/load. Recognises objects by gameplay tag, judges what goes into a zone, validates ordered procedures, and records what the trainee got wrong.",
+	"Category": "Gameplay",
+	"CreatedBy": "ReyvanAir",
+	"CreatedByURL": "https://github.com/ReyvanAir",
+	"DocsURL": "https://reyvanair.github.io/SimFlow/",
+	"MarketplaceURL": "",
+	"SupportURL": "https://github.com/ReyvanAir/SimFlow/issues",
+	"EngineVersion": "5.6.0",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "SimFlowRuntime",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault"
+		},
+		{
+			"Name": "SimFlowEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}

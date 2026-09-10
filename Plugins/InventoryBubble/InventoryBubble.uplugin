@@ -1,0 +1,25 @@
+{
+	"FileVersion": 3,
+	"Version": 4,
+	"VersionName": "1.1.1",
+	"FriendlyName": "InventoryBubble",
+	"Description": "VR inventory bubble: a translucent sphere that captures, shrinks and stores exactly one grabbable item, and restores it on retrieval. Framework-agnostic, Blueprint-first, with optional UE5 VR Template and VR Expansion Plugin adapters.",
+	"Category": "Gameplay",
+	"CreatedBy": "ReyvanAir",
+	"CreatedByURL": "https://github.com/ReyvanAir",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"EngineVersion": "5.6.0",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "InventoryBubble",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

@@ -1,0 +1,83 @@
+# =====================================================================
+# Unreal Engine .gitignore
+# Based on GitHub's "UnrealEngine" template, with recursive patterns so
+# that plugins nesting their folders two levels deep are also covered
+# (e.g. Plugins/VRExpansionPlugin/VRExpansionPlugin/Binaries).
+# =====================================================================
+
+# ---- Generated Unreal folders (never commit these) ----
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+Build/
+!Build/**/*.ico
+!Build/*/PakBlacklist*.txt
+
+# ---- Lighting BuiltData ----
+*_BuiltData.uasset
+
+# ---- Visual Studio / IDE local state ----
+.vs/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+*.xcodeproj
+*.xcworkspace
+*.sln.DotSettings.user
+
+# ---- Compiled object / binary files ----
+*.o
+*.obj
+*.slo
+*.lo
+*.gch
+*.pch
+*.a
+*.la
+*.lai
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+*.ipa
+*.exp
+*.pdb
+*.ipch
+*.mod
+
+# ---- Build output (guide: don't store build output in GitHub) ----
+*.apk
+*.pak
+
+# ---- Precompiled source art ----
+SourceArt/**/*.png
+SourceArt/**/*.tga
+
+# ---- Local scratch / backups ----
+*.bak
+*.tmp
+*.log
+
+# ---- Local tooling: graphify knowledge graphs (large, regenerable) ----
+graphify-out/
+
+# ---- Local tooling / editor config ----
+# Not needed to build or run the project; these are personal to one machine.
+.claude/
+CLAUDE.md
+.graphifyignore
+.ignore
+.clangd
+.clang-format
+.vsconfig
+*.code-workspace
+Plugins/InventoryBubble_Prompt.md
